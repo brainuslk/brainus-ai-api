@@ -1,0 +1,154 @@
+---
+title: Usage Analytics
+description: Analyze and optimize your API usage patterns
+---
+
+import { Callout } from "fumadocs-ui/components/callout";
+
+Analyze your API usage data to optimize costs, improve performance, and make informed decisions about your API consumption.
+
+## Available Metrics
+
+The Usage API provides key metrics for analyzing your consumption:
+
+- **Request counts** - Total API calls made
+- **Token usage** - Total tokens consumed
+- **Cost tracking** - Total cost in USD
+- **Endpoint breakdown** - Usage by endpoint
+- **Time periods** - Usage over the billing period
+- **Quota status** - Current quota utilization
+
+## Quick Analysis
+
+Get a snapshot of your usage programmatically:
+
+### Python
+
+```python
+from brainus_ai import BrainusAI
+
+async def analyze_usage():
+    client = BrainusAI(api_key="your_api_key_here")
+    usage = await client.get_usage()
+
+    # Quick metrics
+    print(f"Requests: {usage.total_requests:,}")
+    print(f"Tokens: {usage.total_tokens:,}")
+    print(f"Cost: ${usage.total_cost_usd:.4f}")
+    print(f"Quota: {usage.quota_percentage:.1f}%")
+
+    # Cost per request
+    if usage.total_requests > 0:
+        cost_per_request = usage.total_cost_usd / usage.total_requests
+        print(f"Cost per request: ${cost_per_request:.6f}")
+```
+
+### JavaScript
+
+```javascript
+import { BrainusAI } from "@brainus/ai";
+
+const client = new BrainusAI({ apiKey: "your_api_key_here" });
+const usage = await client.getUsage();
+
+// Quick metrics
+console.log(`Requests: ${usage.totalRequests.toLocaleString()}`);
+console.log(`Tokens: ${usage.totalTokens.toLocaleString()}`);
+console.log(`Cost: $${usage.totalCostUsd.toFixed(4)}`);
+console.log(`Quota: ${usage.quotaPercentage.toFixed(1)}%`);
+
+// Cost per request
+if (usage.totalRequests > 0) {
+  const costPerRequest = usage.totalCostUsd / usage.totalRequests;
+  console.log(`Cost per request: $${costPerRequest.toFixed(6)}`);
+}
+```
+
+## Visual Analytics Dashboard
+
+For comprehensive analytics and monitoring, use the **[Developer Dashboard](https://developers.brainus.lk/dashboard/usage)** which provides:
+
+### Real-Time Monitoring
+
+- Live usage graphs and charts
+- Request rate visualization
+- Token consumption trends
+- Cost tracking over time
+
+### Historical Analysis
+
+- Daily, weekly, and monthly trends
+- Endpoint usage comparison
+- Cost projections and forecasting
+- Peak usage identification
+
+### Advanced Features
+
+- **Custom date ranges** - Analyze any time period
+- **Endpoint breakdown** - See which endpoints consume most quota
+- **Export data** - Download usage data in CSV/JSON
+- **Usage alerts** - Get notified of unusual patterns
+- **Cost optimization** - Identify optimization opportunities
+
+<Callout type="info">
+  Access comprehensive usage analytics and monitoring tools at
+  [developers.brainus.lk](https://developers.brainus.lk). The dashboard provides
+  visual insights and detailed reports for your API usage.
+</Callout>
+
+## Key Metrics to Monitor
+
+### 1. Cost Efficiency
+
+Track your cost per request to identify optimization opportunities:
+
+- Lower cost per request = better efficiency
+- Compare across different endpoints
+- Monitor trends over time
+
+### 2. Token Usage
+
+Understand token consumption patterns:
+
+- Average tokens per request
+- Token usage by endpoint
+- Cost per 1K tokens
+
+### 3. Quota Utilization
+
+Monitor your quota usage to plan upgrades:
+
+- Daily usage rate
+- Month-to-date consumption
+- Projected end-of-month usage
+
+### 4. Endpoint Distribution
+
+Analyze which endpoints are most used:
+
+- Request count by endpoint
+- Cost distribution across endpoints
+- Performance patterns
+
+## Best Practices
+
+1. **Regular monitoring** - Review usage weekly in the dashboard
+2. **Set up alerts** - Get notified of unusual patterns or quota thresholds
+3. **Track trends** - Compare week-over-week and month-over-month
+4. **Optimize costs** - Focus on high-cost, high-volume endpoints
+5. **Plan capacity** - Use historical data to forecast future needs
+
+## Programmatic Access
+
+While the dashboard provides comprehensive visual analytics, you can also access usage data programmatically via the [Usage API](/docs/api-reference/usage) for:
+
+- Custom integrations
+- Automated reporting
+- Alert systems
+- Third-party analytics tools
+
+## Related Resources
+
+- **[Usage API](/docs/api-reference/usage)** - Complete API reference
+- **[Quota Management](/docs/api-reference/usage/quotas)** - Monitor quotas
+- **[Developer Dashboard](https://developers.brainus.lk)** - Visual analytics and monitoring

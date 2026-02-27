@@ -1,0 +1,51 @@
+---
+title: SDKs & Client Libraries
+description: Official SDKs for Python, JavaScript/TypeScript, and other languages
+---
+
+import { Callout } from "fumadocs-ui/components/callout";
+import { Cards, Card } from "fumadocs-ui/components/card";
+
+Official BrainUs SDKs make it easy to integrate our API into your applications. We provide fully-typed, well-documented SDKs for popular programming languages.
+
+## Available SDKs
+
+<Cards>
+  <Card
+    title="Python SDK"
+    description="Install via pip: brainus-ai"
+    href="/docs/sdks/python"
+  />
+  <Card
+    title="JavaScript/TypeScript"
+    description="Install via npm: @brainus/ai"
+    href="/docs/sdks/javascript"
+  />
+  <Card title="Go SDK" description="Coming soon" href="/docs/sdks/go" />
+  <Card title="Rust SDK" description="Coming soon" href="/docs/sdks/rust" />
+</Cards>
+
+## Features
+
+All official SDKs include:
+
+- **Fully typed** - TypeScript & Python type hints
+- **Auto-retry** - Automatic retry on transient failures
+- **Rate limit handling** - Built-in backoff strategies
+- **Error handling** - Rich error types with helpful messages
+- **Async support** - Native async/await in supported languages
+- **Timeout control** - Configurable request timeouts
+
+<Callout type="tip">
+  Can't find an SDK for your language? Use our [REST
+  API](/docs/api-reference/query) directly or check out [community
+  SDKs](https://github.com/brainus-ai/awesome-brainus).
+</Callout>
+
+## Quick Start
+
+Get started with your preferred language:
+
+- **[Python SDK](/docs/sdks/python)** - Django, Flask, FastAPI
+- **[JavaScript SDK](/docs/sdks/javascript)** - Node.js, React, Next.js
+- **[REST API](/docs/api-reference/query)** - Use any HTTP client

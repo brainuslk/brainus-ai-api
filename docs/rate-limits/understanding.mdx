@@ -1,0 +1,111 @@
+---
+title: Understanding Rate Limits
+description: Deep dive into how BrainUs rate limits work
+---
+
+import { Callout } from "fumadocs-ui/components/callout";
+
+Learn how BrainUs rate limits work and how to check your current status.
+
+## How Limits Work
+
+BrainUs uses a **sliding window** algorithm for rate limiting. This means:
+
+- Limits are calculated over a rolling time period
+- Not reset at fixed intervals
+- Prevents burst traffic at window boundaries
+
+### Example: Per-Minute Limit
+
+```
+Time: 10:00:30 - Request made
+Window: Last 60 seconds (9:59:30 to 10:00:30)
+Count: All requests in this window
+```
+
+## Checking Your Limits
+
+Every API response includes rate limit headers:
+
+```bash
+curl -i "https://api.brainus.lk/api/v1/query" \
+  -H "X-API-Key: $BRAINUS_API_KEY"
+
+# Response headers:
+X-RateLimit-Limit: 60
+X-RateLimit-Remaining: 55
+X-RateLimit-Reset: 1640995260
+```
+
+### Parsing Headers
+
+```python
+import requests
+import time
+import os
+from datetime import datetime
+
+# Example using direct HTTP request (not SDK, for header visibility)
+response = requests.post(
+    "https://api.brainus.lk/api/v1/query",
+    headers={"X-API-Key": os.getenv("BRAINUS_API_KEY")},
+    json={"query": "test", "store_id": "default"}
+)
+
+# Get rate limit info
+limit = int(response.headers.get("X-RateLimit-Limit", 0))
+remaining = int(response.headers.get("X-RateLimit-Remaining", 0))
+reset_timestamp = int(response.headers.get("X-RateLimit-Reset", 0))
+
+# Convert reset to datetime
+reset_time = datetime.fromtimestamp(reset_timestamp)
+print(f"Remaining: {remaining}/{limit}")
+print(f"Resets at: {reset_time}")
+```
+
+## Rate Limit Reset Schedule
+
+| Limit Type     | Reset Behavior               |
+| -------------- | ---------------------------- |
+| **Per-minute** | Rolling 60-second window     |
+| **Daily**      | Midnight UTC (00:00:00)      |
+| **Monthly**    | 1st of month at 00:00:00 UTC |
+
+## Quota vs Rate Limits
+
+**Quota** = Total monthly allowance  
+**Rate Limit** = Requests per time unit
+
+Example on Pro plan:
+
+- **Quota**: 10,000 requests/month
+- **Per-minute limit**: 60 requests/minute
+- **Daily limit**: 10,000 requests/day
+
+<Callout type="info">
+  You can have quota remaining but still hit rate limits if you send too many
+  requests too quickly!
+</Callout>
+
+## Multiple API Keys
+
+Each API key has its own rate limits:
+
+```python
+# Key 1: Uses its own 60/min limit
+# client1 = BrainusAI(api_key="key_1")
+# result1 = await client1.query("test")
+
+# Key 2: Separate 60/min limit
+# client2 = BrainusAI(api_key="key_2")
+# result2 = await client2.query("test")
+```
+
+<Callout type="tip">
+  Use separate API keys for different services to isolate rate limits!
+</Callout>
+
+## Next Steps
+
+- **[Handling Rate Limits](/docs/rate-limits/handling)** - Implementation strategies
+- **[Optimization](/docs/rate-limits/optimization)** - Reduce API calls

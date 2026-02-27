@@ -1,0 +1,385 @@
+---
+title: JavaScript/TypeScript Examples
+description: Production-ready examples for Node.js, React, Next.js, Express
+---
+
+import { Callout } from "fumadocs-ui/components/callout";
+
+Complete JavaScript and TypeScript examples for integrating BrainUs API with popular frameworks.
+
+## Next.js App Router
+
+```typescript
+// app/api/query/route.ts
+import { BrainusAI } from "@brainus/ai";
+import { NextRequest, NextResponse } from "next/server";
+
+const client = new BrainusAI({
+  apiKey: process.env.BRAINUS_API_KEY!,
+});
+
+export async function POST(request: NextRequest) {
+  try {
+    const { query, store_id = "default", filters } = await request.json();
+
+    if (!query) {
+      return NextResponse.json({ error: "Query is required" }, { status: 400 });
+    }
+
+    const result = await client.query({
+      query,
+      storeId: store_id,
+      filters,
+    });
+
+    return NextResponse.json({
+      answer: result.answer,
+      citations: result.citations,
+      hasCitations: result.hasCitations,
+    });
+  } catch (error: any) {
+    return NextResponse.json(
+      { error: error.message || "Internal server error" },
+      { status: 500 }
+    );
+  }
+}
+```
+
+```typescript
+// app/components/QueryChat.tsx
+"use client";
+
+import { useState } from "react";
+
+export function QueryChat() {
+  const [query, setQuery] = useState("");
+  const [answer, setAnswer] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+
+    try {
+      const response = await fetch("/api/query", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ query }),
+      });
+
+      const data = await response.json();
+
+      if (data.error) {
+        alert(data.error);
+      } else {
+        setAnswer(data.answer);
+      }
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="max-w-2xl mx-auto p-6">
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <input
+          type="text"
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          placeholder="Ask a question..."
+          className="w-full p-3 border rounded"
+          disabled={loading}
+        />
+        <button
+          type="submit"
+          disabled={loading}
+          className="w-full bg-blue-500 text-white p-3 rounded disabled:opacity-50"
+        >
+          {loading ? "Loading..." : "Ask"}
+        </button>
+      </form>
+
+      {answer && (
+        <div className="mt-6 p-4 bg-gray-50 rounded">
+          <h3 className="font-semibold mb-2">Answer:</h3>
+          <p>{answer}</p>
+        </div>
+      )}
+    </div>
+  );
+}
+```
+
+## React Hook
+
+```typescript
+// hooks/useBrainUs.ts
+import { useState, useCallback } from "react";
+
+interface QueryResult {
+  answer: string;
+  citations: any[];
+  hasCitations: boolean;
+}
+
+export function useBrainUs() {
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [data, setData] = useState<QueryResult | null>(null);
+
+  const query = useCallback(async (question: string, storeId = "default") => {
+    setLoading(true);
+    setError(null);
+
+    try {
+      const response = await fetch("/api/query", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ query: question, store_id: storeId }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`);
+      }
+
+      const result = await response.json();
+      setData(result);
+      return result;
+    } catch (err: any) {
+      setError(err.message);
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  return { query, loading, error, data };
+}
+
+// Usage in component
+function MyComponent() {
+  const { query, loading, error, data } = useBrainUs();
+
+  const handleAsk = async () => {
+    await query("What is photosynthesis?");
+  };
+
+  return (
+    <div>
+      <button onClick={handleAsk} disabled={loading}>
+        Ask Question
+      </button>
+      {loading && <p>Loading...</p>}
+      {error && <p>Error: {error}</p>}
+      {data && <p>Answer: {data.answer}</p>}
+    </div>
+  );
+}
+```
+
+## Express.js with Caching
+
+```javascript
+// server.js
+require("dotenv").config();
+const express = require("express");
+const { BrainusAI, RateLimitError } = require("@brainus/ai");
+const NodeCache = require("node-cache");
+
+const app = express();
+app.use(express.json());
+
+// Cache responses for 1 hour
+const cache = new NodeCache({ stdTTL: 3600 });
+
+const client = new BrainusAI({
+  apiKey: process.env.BRAINUS_API_KEY,
+});
+
+app.post("/api/query", async (req, res) => {
+  const { query, store_id = "default" } = req.body;
+
+  if (!query) {
+    return res.status(400).json({ error: "Query is required" });
+  }
+
+  // Check cache
+  const cacheKey = `${query}-${store_id}`;
+  const cached = cache.get(cacheKey);
+  if (cached) {
+    return res.json({ ...cached, cached: true });
+  }
+
+  try {
+    const result = await client.query({
+      query,
+      storeId: store_id,
+    });
+
+    const response = {
+      answer: result.answer,
+      citations: result.citations,
+      hasCitations: result.hasCitations,
+    };
+
+    // Cache the response
+    cache.set(cacheKey, response);
+
+    res.json({ ...response, cached: false });
+  } catch (error) {
+    if (error instanceof RateLimitError) {
+      return res.status(429).json({
+        error: "Rate limit exceeded",
+        retry_after: error.retryAfter,
+      });
+    }
+
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.listen(3000, () => {
+  console.log("Server running on port 3000");
+});
+```
+
+## TypeScript with Error Handling
+
+```typescript
+import { BrainusAI, BrainusError, RateLimitError } from "@brainus/ai";
+
+const client = new BrainusAI({
+  apiKey: process.env.BRAINUS_API_KEY!,
+});
+
+async function robustQuery(
+  query: string,
+  maxRetries: number = 3
+): Promise<string | null> {
+  for (let attempt = 0; attempt < maxRetries; attempt++) {
+    try {
+      const result = await client.query({
+        query,
+        storeId: "default",
+      });
+
+      return result.answer;
+    } catch (error) {
+      if (error instanceof RateLimitError) {
+        console.log(`Rate limited. Waiting ${error.retryAfter}s...`);
+        await new Promise((resolve) =>
+          setTimeout(resolve, error.retryAfter * 1000)
+        );
+        continue;
+      }
+
+      if (error instanceof BrainusError) {
+        console.error(`API Error: ${error.message}`);
+        return null;
+      }
+
+      // Unknown error
+      console.error(`Unexpected error:`, error);
+      return null;
+    }
+  }
+
+  console.error(`Failed after ${maxRetries} attempts`);
+  return null;
+}
+
+// Usage
+const answer = await robustQuery("What is photosynthesis?");
+console.log(answer);
+```
+
+## Streaming Responses (Coming Soon)
+
+```typescript
+// Future API
+import { BrainusAI } from "@brainus/ai";
+
+const client = new BrainusAI({
+  apiKey: process.env.BRAINUS_API_KEY!,
+});
+
+async function* streamQuery(query: string) {
+  const stream = await client.queryStream({
+    query,
+    storeId: "default",
+  });
+
+  for await (const chunk of stream) {
+    yield chunk.text;
+  }
+}
+
+// Usage
+for await (const text of streamQuery("Explain photosynthesis")) {
+  process.stdout.write(text);
+}
+```
+
+## Batch Processing
+
+```javascript
+const { BrainusAI } = require("@brainus/ai");
+
+const client = new BrainusAI({
+  apiKey: process.env.BRAINUS_API_KEY,
+});
+
+async function processBatch(queries, batchSize = 5) {
+  const results = [];
+
+  for (let i = 0; i < queries.length; i += batchSize) {
+    const batch = queries.slice(i, i + batchSize);
+
+    const batchResults = await Promise.all(
+      batch.map(async (query) => {
+        try {
+          const result = await client.query({ query, storeId: "default" });
+          return { query, answer: result.answer, error: null };
+        } catch (error) {
+          return { query, answer: null, error: error.message };
+        }
+      })
+    );
+
+    results.push(...batchResults);
+
+    // Rate limiting: wait between batches
+    if (i + batchSize < queries.length) {
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+    }
+  }
+
+  return results;
+}
+
+// Usage
+const queries = [
+  "What is photosynthesis?",
+  "Explain the water cycle",
+  "What causes earthquakes?",
+  "Who was Albert Einstein?",
+];
+
+// Note: Ensure you are in an async context
+// const results = await processBatch(queries);
+// console.log(results);
+```
+
+<Callout type="tip">
+  All examples are available in our [GitHub
+  repository](https://github.com/brainuslk/brainus-ai-js/tree/main/examples).
+</Callout>
+
+## Next Steps
+
+- **[Python Examples](/docs/examples/python)** - Django, Flask, FastAPI
+- **[JavaScript SDK](/docs/sdks/javascript)** - Full SDK documentation
+- **[Authentication](/docs/authentication)** - Secure API key management

@@ -1,0 +1,206 @@
+---
+title: Query API
+description: Query the BrainUs knowledge base with RAG-powered search
+---
+
+import { Callout } from "fumadocs-ui/components/callout";
+import { TypeTable } from "fumadocs-ui/components/type-table";
+import { Tab, Tabs } from "fumadocs-ui/components/tabs";
+
+The Query API is the core endpoint for retrieving educational content from the BrainUs knowledge base. It uses Retrieval-Augmented Generation (RAG) to provide accurate answers with verifiable citations.
+
+## Endpoint
+
+```
+POST /api/v1/dev/query
+```
+
+**Base URL:** `https://api.brainus.lk`
+
+## Authentication
+
+All requests require authentication using your API key. See [Authentication](/docs/authentication) for details.
+
+```http
+X-API-Key: $BRAINUS_API_KEY
+```
+
+## Quick Example
+
+Get started with our official SDKs or use direct HTTP requests:
+
+<Tabs items={['Python SDK', 'JavaScript SDK', 'curl']}>
+  <Tab value="Python SDK">
+    ```python
+    import asyncio
+    from brainus_ai import BrainusAI
+
+    async def main():
+        client = BrainusAI(api_key="your_api_key")
+
+        response = await client.query(
+            query="What is photosynthesis?"
+        )
+
+        print(response.answer)
+        for citation in response.citations:
+            print(f"Source: {citation.document_name}")
+
+    asyncio.run(main())
+    ```
+
+  </Tab>
+  
+  <Tab value="JavaScript SDK">
+    ```javascript
+    import { BrainusAI } from '@brainus/ai';
+
+    const client = new BrainusAI({ apiKey: 'your_api_key' });
+
+    const response = await client.query({
+      query: 'What is photosynthesis?'
+    });
+
+    console.log(response.answer);
+    response.citations.forEach(citation => {
+      console.log(`Source: ${citation.documentName}`);
+    });
+    ```
+
+  </Tab>
+  
+  <Tab value="curl">
+    ```bash
+    curl -X POST https://api.brainus.lk/api/v1/dev/query \
+      -H "X-API-Key: $BRAINUS_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "query": "What is photosynthesis?",
+        "store_id": "default"
+      }'
+    ```
+  </Tab>
+</Tabs>
+
+## Request Parameters
+
+<TypeTable
+  type={{
+    query: {
+      description: "The question or search query",
+      type: "string",
+      required: true,
+    },
+    store_id: {
+      description: 'Knowledge base identifier (use "default")',
+      type: "string",
+      required: true,
+    },
+    filters: {
+      description: "Filter results by grade, subject, or language",
+      type: "object",
+      required: false,
+    },
+    options: {
+      description: "Additional options for the query",
+      type: "object",
+      required: false,
+    },
+  }}
+/>
+
+## Response Format
+
+### Response Body
+
+<TypeTable
+  type={{
+    answer: {
+      description: "AI-generated answer to your query",
+      type: "string",
+      required: true,
+    },
+    citations: {
+      description: "Array of source citations from documents",
+      type: "array",
+      required: true,
+    },
+    has_citations: {
+      description: "Boolean indicating if citations are included",
+      type: "boolean",
+      required: true,
+    },
+  }}
+/>
+
+### Citation Object
+
+<TypeTable
+  type={{
+    document_id: {
+      description: "Unique identifier for the source document",
+      type: "string",
+      required: false,
+    },
+    document_name: {
+      description: "Name of the source document",
+      type: "string",
+      required: true,
+    },
+    pages: {
+      description: "Array of page numbers where content was found",
+      type: "array",
+      required: false,
+    },
+    metadata: {
+      description: "Additional metadata about the citation",
+      type: "object",
+      required: false,
+    },
+    chunk_text: {
+      description: "Relevant text excerpt from the source document",
+      type: "string",
+      required: true,
+    },
+  }}
+/>
+
+**Example Response:**
+
+```json
+{
+  "answer": "Great question! Python is a high-level, interpreted programming language...",
+  "citations": [
+    {
+      "document_id": "",
+      "document_name": "al-ict-lesson09-ictfromabc.pdf",
+      "pages": [1, 2, 3],
+      "metadata": null,
+      "chunk_text": "--- PAGE 1 ---\n\nPython is a high-level, interpreted programming language..."
+    }
+  ],
+  "has_citations": true
+}
+```
+
+<Callout type="info">
+  All responses include citations from official Sri Lankan curriculum documents,
+  ensuring verifiable answers.
+</Callout>
+
+## Next Steps
+
+- **[Basic Usage](/docs/api-reference/query/basic-usage)** - Learn how to make basic queries
+- **[Filters & Options](/docs/api-reference/query/filters)** - Advanced filtering and options
+- **[Best Practices](/docs/api-reference/query/best-practices)** - Optimization tips and patterns
+
+## Rate Limits
+
+Query API requests count against your [rate limits](/docs/rate-limits):
+
+| Plan       | Requests/min | Requests/day | Requests/month |
+| ---------- | ------------ | ------------ | -------------- |
+| Free       | 10           | 300          | 300            |
+| Starter    | 20           | 2,000        | 2,000          |
+| Pro        | 60           | 10,000       | 10,000         |
+| Enterprise | 200          | 50,000       | 50,000         |

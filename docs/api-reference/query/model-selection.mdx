@@ -1,0 +1,184 @@
+---
+title: Model Selection & Plans
+description: Available models and pricing plans
+---
+
+import { Callout } from "fumadocs-ui/components/callout";
+import { TypeTable } from "fumadocs-ui/components/type-table";
+
+Choose the right plan for your use case based on rate limits, monthly quota, and available models.
+
+## Available Models
+
+The BrainUs Query API supports the following models:
+
+### brainusai-fast
+
+- **Fastest** response times
+- **Most cost-effective** for high-volume queries
+- Ideal for simple queries and basic RAG operations
+- Available on all plans
+
+### brainusai-thinking
+
+- **Enhanced** performance for complex queries
+- Better reasoning capabilities
+- Available on **Enterprise plan only**
+- Recommended for production applications requiring higher quality
+
+## Plans & Pricing
+
+Choose the plan that fits your needs:
+
+| Plan        | Monthly Requests | Rate Limit | Models Available                      | Support   | Price (LKR) |
+| ----------- | ---------------- | ---------- | ------------------------------------- | --------- | ----------- |
+| **Free**    | 300              | 10/min     | brainusai-fast                        | Community | 0           |
+| **Starter** | 2,000            | 20/min     | brainusai-fast                        | Community | 999         |
+| **Pro**     | 10,000           | 60/min     | brainusai-fast                        | Email     | 3,499       |
+| **Enterprise** | 50,000        | 200/min    | brainusai-fast, brainusai-thinking    | Dedicated | 14,999      |
+
+<Callout type="info">
+  All plans include access to the Query API with the same response format. Upgrade for more requests, faster rate limits, and access to premium models.
+</Callout>
+
+## Plan Features
+
+<TypeTable
+  type={{
+    free: {
+      description: "Perfect for testing and learning",
+      type: "object",
+      required: true,
+    },
+    starter: {
+      description: "Ideal for personal projects",
+      type: "object",
+      required: true,
+    },
+    pro: {
+      description: "For production applications",
+      type: "object",
+      required: true,
+    },
+    enterprise: {
+      description: "Large-scale applications with premium support",
+      type: "object",
+      required: true,
+    },
+  }}
+/>
+
+### Feature Breakdown
+
+| Feature | Free | Starter | Pro | Enterprise |
+| ------- | ---- | ------- | --- | ---------- |
+| Basic Query | ✅ | ✅ | ✅ | ✅ |
+| Standard Response Time | ✅ | ✅ | ✅ | ✅ |
+| Fast Response Time | ❌ | ❌ | ✅ | ✅ |
+| Priority Support | ❌ | ❌ | ❌ | ✅ |
+| Dedicated Support | ❌ | ❌ | ❌ | ✅ |
+| brainusai-thinking Model | ❌ | ❌ | ❌ | ✅ |
+| SLA Guarantee | ❌ | ❌ | ❌ | ✅ |
+
+## Using Different Models
+
+### Default Model
+
+By default, your plan's first allowed model is used:
+
+```bash
+curl -X POST https://api.brainus.lk/api/v1/dev/query \
+  -H "X-API-Key: $BRAINUS_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "query": "What is photosynthesis?",
+    "store_id": "default"
+  }'
+```
+
+This will use `brainusai-fast` for Free/Starter/Pro plans, or `brainusai-fast` for Enterprise.
+
+### Specify a Model (Enterprise Only)
+
+Enterprise customers can specify which model to use:
+
+```bash
+curl -X POST https://api.brainus.lk/api/v1/dev/query \
+  -H "X-API-Key: $BRAINUS_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "query": "What is photosynthesis?",
+    "store_id": "default",
+    "model": "brainusai-thinking"
+  }'
+```
+
+**Valid values for your plan:**
+- Free/Starter/Pro: `brainusai-fast` (only option)
+- Enterprise: `brainusai-fast` or `brainusai-thinking`
+
+<Callout type="warn">
+  If you specify a model not available in your plan, the API will return a 403 error.
+</Callout>
+
+## Rate Limits Per Plan
+
+| Plan | Requests/Minute | Requests/Day | Requests/Month |
+| --- | --- | --- | --- |
+| Free | 10 | 300 | 300 |
+| Starter | 20 | 2,000 | 2,000 |
+| Pro | 60 | 10,000 | 10,000 |
+| Enterprise | 200 | 50,000 | 50,000 |
+
+When you exceed your rate limit, the API responds with HTTP 429 (Too Many Requests). See [Rate Limits](/docs/rate-limits) for handling strategies.
+
+## Choosing a Plan
+
+### Use Free when:
+- Testing the API
+- Learning and experimenting
+- Building prototypes
+
+### Use Starter when:
+- Small personal projects
+- Light production use
+- Budget-conscious applications
+
+### Use Pro when:
+- Production applications
+- Need faster response times
+- Regular API usage
+
+### Use Enterprise when:
+- Large-scale deployments
+- Need access to `brainusai-thinking` model
+- Require dedicated support
+- Need SLA guarantees
+
+## Upgrading Your Plan
+
+To upgrade your plan:
+
+1. Visit [Developer Dashboard](https://developers.brainus.lk/dashboard)
+2. Navigate to **Plans & Billing**
+3. Select your desired plan
+4. Complete the payment process
+
+Your upgrade takes effect immediately. No need to update your API key.
+
+## Model Selection Strategy
+
+- **Start with brainusai-fast** - It's fast, cost-effective, and works well for most use cases
+- **For complex queries** - Upgrade to Enterprise plan for access to brainusai-thinking
+- **For high volume** - Upgrade to Pro or Enterprise for higher rate limits
+- **For premium support** - Enterprise plan includes dedicated support
+
+## Next Steps
+
+- **[Basic Usage](/docs/api-reference/query/basic-usage)** - Get started with queries
+- **[Filters & Options](/docs/api-reference/query/filters)** - Learn about filtering
+- **[Rate Limits](/docs/rate-limits)** - Understand rate limit handling
+
+
+
+

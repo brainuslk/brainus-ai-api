@@ -1,0 +1,152 @@
+---
+title: Managing API Keys
+description: Create, rotate, and revoke API keys
+---
+
+import { Callout } from "fumadocs-ui/components/callout";
+import { Step, Steps } from "fumadocs-ui/components/steps";
+
+Learn how to create, manage, rotate, and revoke your API keys for secure access to the BrainUs API.
+
+## Creating API Keys
+
+<Callout type="info">
+  **Subscription Required:** You must have an active developer subscription
+  (Free or paid) before creating API keys. The API key will match your current
+  plan.
+</Callout>
+
+<Steps>
+  <Step>
+    ### Subscribe to a Plan
+    
+    If you don't have an active subscription, go to [Upgrade](https://developers.brainus.lk/upgrade) and subscribe to a Free or paid plan. No credit card required for the Free plan!
+  </Step>
+
+{" "}
+<Step>
+  ### Navigate to Dashboard Go to [Dashboard → API
+  Keys](https://developers.brainus.lk/dashboard/api-keys)
+</Step>
+
+{" "}
+
+<Step>### Generate New Key Click **"Create API Key"** button</Step>
+
+{" "}
+
+<Step>
+  ### Name Your Key Give your key a descriptive name (e.g., "Production Server",
+  "Development", "Staging")
+</Step>
+
+  <Step>
+    ### Copy Immediately
+    
+    **Important:** Copy your key immediately - you won't be able to see it again!
+  </Step>
+</Steps>
+
+## Plan Assignment
+
+When you create an API key, it automatically matches your current subscription plan. Your key inherits the rate limits and features from your active plan.
+
+If you upgrade your subscription, newly created keys will use the upgraded plan. Existing keys continue to use their original plan.
+
+<Callout type="warn">
+  If you don't have an active subscription, the "Create API Key" button will be
+  disabled. Subscribe to a plan first at
+  [Upgrade](https://developers.brainus.lk/upgrade).
+</Callout>
+
+## Key Naming Best Practices
+
+Use descriptive names that indicate:
+
+- **Environment**: `prod-api-server`, `dev-local`, `staging-app`
+- **Purpose**: `backend-api`, `mobile-app`, `data-pipeline`
+- **Owner/Team**: `frontend-team`, `john-dev`, `analytics`
+
+<Callout type="tip">
+  Good naming makes it easier to identify which key to rotate or revoke when
+  needed.
+</Callout>
+
+## Rotating API Keys
+
+Regularly rotate your keys for security:
+
+```bash
+# 1. Generate a new key
+NEW_KEY=$(brainus keys create --name "production-v2")
+
+# 2. Update your application with new key
+export BRAINUS_API_KEY=$NEW_KEY
+
+# 3. Deploy and verify new key works
+# 4. Revoke old key after successful deployment
+brainus keys revoke key_old_abc123
+```
+
+### Rotation Schedule
+
+| Environment | Recommended Frequency |
+| ----------- | --------------------- |
+| Production  | Every 90 days         |
+| Staging     | Every 6 months        |
+| Development | Yearly or as needed   |
+
+## Revoking API Keys
+
+Revoke keys immediately if:
+
+- **Compromised**: Key was exposed publicly
+- **Employee departure**: Team member leaves
+- **No longer needed**: Deprecated project or service
+- **Suspicious activity**: Unusual usage patterns detected
+
+### How to Revoke
+
+1. Go to [Dashboard → API Keys](https://developers.brainus.lk/dashboard/keys)
+2. Find the key to revoke
+3. Click **"Revoke"**
+4. Confirm the action
+
+<Callout type="warn">
+  Revoking a key is **immediate and irreversible**. All requests using that key
+  will fail instantly.
+</Callout>
+
+## Key Limits by Plan
+
+| Plan       | Max API Keys |
+| ---------- | ------------ |
+| Free       | 3            |
+| Pro        | 10           |
+| Enterprise | Unlimited    |
+
+## Viewing Key Usage
+
+Track which keys are being used:
+
+```bash
+# View usage per key
+brainus usage --key-id key_abc123 --last 7d
+```
+
+In the dashboard, you can see:
+
+- Last used timestamp
+- Total requests made
+- Current rate limit status
+- Geographic usage patterns (Enterprise)
+
+<Callout type="tip">
+  Unused keys for 90+ days are flagged for review. Consider revoking them to
+  reduce security risk.
+</Callout>
+
+## Next Steps
+
+- **[Security Best Practices](/docs/authentication/security)** - Keep your keys safe
+- **[Environment Setup](/docs/authentication/environment-setup)** - Configure your development environment

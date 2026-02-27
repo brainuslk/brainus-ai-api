@@ -1,0 +1,90 @@
+---
+title: Error Reference
+description: Complete reference for BrainUs API error codes and troubleshooting
+---
+
+import { Callout } from "fumadocs-ui/components/callout";
+import { TypeTable } from "fumadocs-ui/components/type-table";
+
+This guide provides a complete reference for all error codes returned by the BrainUs API, along with troubleshooting steps.
+
+## Error Response Format
+
+All API errors follow a consistent JSON structure.
+
+### Error Response Object
+
+<TypeTable
+  type={{
+    error: {
+      description: "Error object containing details about the failure",
+      type: "ErrorObject",
+      required: true,
+    },
+  }}
+/>
+
+### ErrorObject
+
+<TypeTable
+  type={{
+    code: {
+      description: "Machine-readable error code for programmatic handling",
+      type: "string",
+      required: true,
+    },
+    message: {
+      description: "Human-readable error message",
+      type: "string",
+      required: true,
+    },
+    details: {
+      description: "Additional error context and details",
+      type: "object",
+      required: false,
+    },
+    retry_after: {
+      description: "Seconds to wait before retrying (for rate limits)",
+      type: "number",
+      required: false,
+    },
+  }}
+/>
+
+**Example Error Response:**
+
+```json
+{
+  "error": {
+    "code": "authentication_failed",
+    "message": "Invalid API key",
+    "details": {
+      "reason": "The provided API key is invalid or has been revoked"
+    }
+  }
+}
+```
+
+## HTTP Status Codes
+
+| Status Code | Meaning               | Description                       |
+| ----------- | --------------------- | --------------------------------- |
+| 200         | OK                    | Request succeeded                 |
+| 400         | Bad Request           | Invalid request parameters        |
+| 401         | Unauthorized          | Invalid or missing API key        |
+| 403         | Forbidden             | API key lacks required permission |
+| 404         | Not Found             | Resource not found                |
+| 429         | Too Many Requests     | Rate limit exceeded               |
+| 500         | Internal Server Error | Server error                      |
+| 503         | Service Unavailable   | Service temporarily down          |
+
+<Callout type="info">
+  Need help? Contact [developers@brainus.lk](mailto:developers@brainus.lk)
+</Callout>
+
+## Error Categories
+
+- **[Common Errors](/docs/errors/common)** - Most frequent errors and fixes
+- **[Authentication Errors](/docs/errors/authentication)** - API key issues
+- **[Rate Limit Errors](/docs/errors/rate-limits)** - Quota exceeded
+- **[Validation Errors](/docs/errors/validation)** - Invalid parameters

@@ -1,0 +1,40 @@
+---
+title: Authentication
+description: Learn how to authenticate and manage your API keys securely
+---
+
+import { Callout } from "fumadocs-ui/components/callout";
+
+The BrainUs API uses API keys to authenticate requests. API keys are unique identifiers that grant access to the API and track your usage against your plan limits.
+
+<Callout type="warn">
+  **Security First:** Treat your API keys like passwords. Never expose them in
+  client-side code, public repositories, or share them publicly.
+</Callout>
+
+## Quick Example
+
+```bash
+curl -X POST "https://api.brainus.lk/api/v1/query" \
+  -H "X-API-Key: $BRAINUS_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"query": "What is photosynthesis?", "store_id": "default"}'
+```
+
+## Getting Your API Key
+
+1. **Sign up** at [developers.brainus.lk](https://developers.brainus.lk)
+2. **Subscribe to a plan** - Go to [Upgrade](https://developers.brainus.lk/upgrade) and subscribe to a Free or paid plan (no credit card required for Free plan)
+3. Navigate to **Dashboard → API Keys**
+4. Click **"Create API Key"**
+5. Copy your key immediately (you won't see it again!)
+
+<Callout type="info">
+  **Subscription Required:** You must have an active developer subscription before creating API keys. The API key will match your current plan. Free accounts start with generous limits. No credit card required!
+</Callout>
+
+## Next Steps
+
+- **[API Key Management](/docs/authentication/managing-keys)** - Create, rotate, and revoke keys
+- **[Security Best Practices](/docs/authentication/security)** - Keep your keys safe
+- **[Environment Setup](/docs/authentication/environment-setup)** - Configure your development environment

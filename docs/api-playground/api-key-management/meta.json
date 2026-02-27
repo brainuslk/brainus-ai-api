@@ -1,0 +1,12 @@
+{
+  "title": "API Key Management",
+  "description": "Manage your API keys",
+  "pages": [
+    "listKeys",
+    "createKey",
+    "getKey",
+    "updateKey",
+    "deleteKey",
+    "regenerateKey"
+  ]
+}

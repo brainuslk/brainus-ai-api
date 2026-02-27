@@ -1,0 +1,72 @@
+---
+title: Rust SDK
+description: Official Rust SDK (Coming Soon)
+---
+
+import { Callout } from "fumadocs-ui/components/callout";
+
+The official Rust SDK is currently in development.
+
+<Callout type="info">
+  In the meantime, you can use our REST API directly with reqwest or any HTTP
+  client.
+</Callout>
+
+## Using reqwest
+
+```rust
+use reqwest::header::{HeaderMap, HeaderValue, CONTENT_TYPE};
+use serde::{Deserialize, Serialize};
+
+#[derive(Serialize)]
+struct QueryRequest {
+    query: String,
+    store_id: String,
+}
+
+#[derive(Deserialize)]
+struct QueryResponse {
+    answer: String,
+    citations: Vec<Citation>,
+}
+
+#[derive(Deserialize)]
+struct Citation {
+    document: String,
+    page: i32,
+}
+
+#[tokio::main]
+async fn main() -> Result<(), Box<dyn std::error::Error>> {
+    let api_key = std::env::var("BRAINUS_API_KEY")?;
+
+    let client = reqwest::Client::new();
+
+    let mut headers = HeaderMap::new();
+    headers.insert(CONTENT_TYPE, HeaderValue::from_static("application/json"));
+    headers.insert("X-API-Key", HeaderValue::from_str(&api_key)?);
+
+    let request_body = QueryRequest {
+        query: "What is photosynthesis?".to_string(),
+        store_id: "default".to_string(),
+    };
+
+    let response = client
+        .post("https://api.brainus.lk/api/v1/query")
+        .headers(headers)
+        .json(&request_body)
+        .send()
+        .await?;
+
+    let result: QueryResponse = response.json().await?;
+
+    println!("Answer: {}", result.answer);
+
+    Ok(())
+}
+```
+
+## Next Steps
+
+- [Rust Examples](/docs/examples/rust)
+- [REST API Reference](/docs/api-reference/query)

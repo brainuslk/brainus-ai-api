@@ -1,0 +1,329 @@
+---
+title: Filters & Options
+description: Advanced filtering for precise results
+---
+
+import { Callout } from "fumadocs-ui/components/callout";
+import { Tab, Tabs } from "fumadocs-ui/components/tabs";
+
+Use filters to refine your queries and get more precise, targeted results from the BrainUs API.
+
+## Available Filters
+
+The Query API supports filtering by document metadata. All filters are optional and use exact matching.
+
+### Filter Fields
+
+| Field      | Type   | Description                                          | Example    |
+| ---------- | ------ | ---------------------------------------------------- | ---------- |
+| `subject`  | string | Subject name                                         | "ict"      |
+| `grade`    | string | Grade level                                          | "11"       |
+| `category` | string | Document category (past-paper, textbook, etc.)       | "textbook" |
+| `language` | string | Content language (english, sinhala, tamil)           | "english"  |
+| `year`     | string | Academic year (mainly for past papers)               | "2024"     |
+
+## Filtering Examples
+
+### Filter by Grade
+
+Target specific grade levels:
+
+<Tabs items={['curl', 'Python', 'JavaScript']}>
+  <Tab value="curl">
+    ```bash
+    curl -X POST https://api.brainus.lk/api/v1/dev/query \
+      -H "X-API-Key: $BRAINUS_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "query": "Explain quadratic equations",
+        "store_id": "default",
+        "filters": {
+          "grade": "11"
+        }
+      }'
+    ```
+  </Tab>
+  
+  <Tab value="Python">
+    ```python
+    # Using Python with actual API
+    import requests
+    
+    response = requests.post(
+        "https://api.brainus.lk/api/v1/dev/query",
+        headers={"X-API-Key": "your_api_key"},
+        json={
+            "query": "Explain quadratic equations",
+            "store_id": "default",
+            "filters": {
+                "grade": "11"
+            }
+        }
+    )
+    ```
+  </Tab>
+  
+  <Tab value="JavaScript">
+    ```javascript
+    const response = await fetch('https://api.brainus.lk/api/v1/dev/query', {
+      method: 'POST',
+      headers: {
+        'X-API-Key': 'your_api_key',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        query: 'Explain quadratic equations',
+        store_id: 'default',
+        filters: {
+          grade: '11'
+        }
+      })
+    });
+    ```
+  </Tab>
+</Tabs>
+
+### Filter by Subject
+
+Get subject-specific results:
+
+```json
+{
+  "query": "Explain Newton's laws",
+  "store_id": "default",
+  "filters": {
+    "subject": "physics"
+  }
+}
+```
+
+### Filter by Category
+
+Target specific document types:
+
+```json
+{
+  "query": "Solve past paper questions",
+  "store_id": "default",
+  "filters": {
+    "category": "past-paper",
+    "year": "2024"
+  }
+}
+```
+
+**Valid categories:**
+- `past-paper` - Past exam papers
+- `model-paper` - Model exam papers
+- `textbook` - Textbook content
+- `tutorial` - Tutorial materials
+- `short-notes` - Quick reference notes
+- `tutes-by-teachers` - Teacher-created materials
+- `reference` - Reference materials
+
+### Filter by Language
+
+Request results in a specific language:
+
+```json
+{
+  "query": "පයිතන් ප්‍රොග්‍රැමිং කුමක්ද?",
+  "store_id": "default",
+  "filters": {
+    "language": "sinhala"
+  }
+}
+```
+
+**Valid languages:**
+- `english` - English content
+- `sinhala` - Sinhala (සිංහල) content
+- `tamil` - Tamil (தமிழ்) content
+
+### Combine Multiple Filters
+
+Apply multiple filters for highly targeted results:
+
+```json
+{
+  "query": "DNA replication",
+  "store_id": "default",
+  "filters": {
+    "grade": "11",
+    "subject": "biology",
+    "language": "english",
+    "category": "textbook"
+  }
+}
+```
+
+<Callout type="tip">
+  Combining filters helps reduce irrelevant results and improves response accuracy. All filters use exact matching.
+</Callout>
+
+## Notes
+
+- **Optional filters**: All filters are optional. Use them to narrow results
+- **Exact matching**: Filters match exact values
+- **Multiple filters**: When combining filters, ALL filters must match (AND logic)
+- **Case sensitive**: Filter values are case-sensitive
+
+## Next Steps
+
+- **[Basic Usage](/docs/api-reference/query/basic-usage)** - Get started with simple queries
+- **[Best Practices](/docs/api-reference/query/best-practices)** - Optimization patterns
+
+## Complete Example
+
+Here's a comprehensive example using all filters and options:
+
+<Tabs items={['Python', 'JavaScript']}>
+  <Tab value="Python">
+    ```python
+    import os
+    import asyncio
+    from brainus_ai import BrainusAI
+
+    async def main():
+        async with BrainusAI(api_key=os.getenv("BRAINUS_API_KEY")) as client:
+            response = await client.query(
+                query="Explain the water cycle",
+                store_id="default",
+                filters={
+                    "grade": "9",  # Single string, not array
+                    "subject": "science",  # Single string, not array
+                    "language": "english"
+                }
+            )
+
+            print(f"Answer: {response.answer}\n")
+
+            if response.citations:
+                print(f"Found {len(response.citations)} relevant sources:")
+                for i, citation in enumerate(response.citations, 1):
+                    # Accessing metadata dict if available
+                    grade = citation.metadata.get('grade', 'N/A') if citation.metadata else 'N/A'
+                    subject = citation.metadata.get('subject', 'N/A') if citation.metadata else 'N/A'
+
+                    print(f"\n{i}. {citation.document_name}")
+                    if citation.pages:
+                        print(f"   Pages: {', '.join(map(str, citation.pages))}")
+                    print(f"   Grade: {grade}")
+                    print(f"   Subject: {subject}")
+                    if citation.chunk_text:
+                        print(f"   Snippet: {citation.chunk_text[:100]}...")
+    
+    if __name__ == "__main__":
+        asyncio.run(main())
+    ```
+
+  </Tab>
+<Tab value="JavaScript">
+    ```javascript
+    import { BrainusAI } from '@brainus/ai';
+
+    const client = new BrainusAI({
+      apiKey: process.env.BRAINUS_API_KEY
+    });
+
+    async function main() {
+      const response = await client.query({
+        query: 'Explain the water cycle',
+        storeId: 'default',
+        filters: {
+          grade: ['8', '9', '10'],
+          subject: ['Science', 'Geography'],
+          language: 'en'
+        },
+        options: {
+          maxResults: 5,
+          minRelevance: 0.85
+        }
+      });
+
+      console.log(`Answer: ${response.answer}\n`);
+
+      if (response.hasCitations) {
+        console.log(`Found ${response.citations.length} relevant sources:`);
+        response.citations.forEach((citation, i) => {
+          // Assuming metadata exists on citation type
+          const grade = citation.metadata?.grade || 'N/A';
+          const subject = citation.metadata?.subject || 'N/A';
+
+          console.log(`\n${i + 1}. ${citation.documentName}`);
+          if (citation.pages.length > 0) {
+            console.log(`   Pages: ${citation.pages.join(", ")}`);
+          }
+          console.log(`   Grade: ${grade}`);
+          console.log(`   Subject: ${subject}`);
+          console.log(`   Relevance: ${(citation.relevance * 100).toFixed(1)}%`);
+          if (citation.chunkText) {
+            console.log(`   Snippet: ${citation.chunkText.substring(0, 100)}...`);
+          }
+        });
+      }
+
+      if (response.metadata) {
+        console.log(`\nQuery Statistics:`);
+        // Note: Metadata fields might also be camelCased in SDK
+        console.log(`  Query ID: ${response.metadata.query_id || response.metadata.id}`);
+        console.log(`  Response time: ${response.metadata.response_time_ms || response.metadata.responseTimeMs}ms`);
+        console.log(`  Tokens used: ${response.metadata.tokens_used || response.metadata.tokensUsed}`);
+      }
+    }
+
+    main();
+    ```
+
+  </Tab>
+</Tabs>
+
+## Tips for Effective Filtering
+
+### 1. Start Broad, Then Narrow
+
+Begin with fewer filters and add more if needed:
+
+```python
+# First attempt - broad
+response = client.query("Cell biology", store_id="default")
+
+# If too many results - narrow down
+response = client.query(
+    "Cell biology",
+    store_id="default",
+    filters={"grade": ["10", "11"], "subject": ["Biology"]}
+)
+```
+
+### 2. Adjust Relevance Threshold
+
+Balance quantity vs. quality:
+
+- **0.6-0.7:** More comprehensive results
+- **0.8-0.9:** Highly relevant results only
+- **0.9-1.0:** Only near-perfect matches
+
+### 3. Optimize for Performance
+
+Fewer results = faster responses:
+
+```python
+# Fast query - minimal citations
+response = client.query(
+    "Quick fact check",
+    store_id="default",
+    options={"max_results": 1, "min_relevance": 0.9}
+)
+```
+
+<Callout type="warn">
+  Setting `min_relevance` too high (>0.95) may result in no citations if no
+  documents meet the threshold.
+</Callout>
+
+## Next Steps
+
+- **[Best Practices](/docs/api-reference/query/best-practices)** - Optimization and performance tips
+- **[Code Examples](/docs/examples)** - Real-world usage patterns
+- **[Rate Limits](/docs/rate-limits)** - Understanding quotas

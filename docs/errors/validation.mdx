@@ -1,0 +1,411 @@
+---
+title: Validation Errors
+description: Troubleshooting invalid request parameters and validation errors
+---
+
+import { Callout } from "fumadocs-ui/components/callout";
+
+Complete guide to resolving validation errors and invalid parameter issues.
+
+## Error: Missing Required Field
+
+**HTTP Status:** `400 Bad Request`
+
+```json
+{
+  "error": {
+    "code": "validation_error",
+    "message": "Missing required field: query",
+    "details": {
+      "field": "query",
+      "reason": "This field is required"
+    }
+  }
+}
+```
+
+### Solution
+
+```python
+# Missing query
+# result = await client.query(store_id="default")
+
+# Include all required fields
+# result = await client.query(
+#     query="What is photosynthesis?",  # Required!
+#     store_id="default"
+# )
+```
+
+## Error: Invalid Field Type
+
+```json
+{
+  "error": {
+    "code": "validation_error",
+    "message": "Invalid type for field: max_results",
+    "details": {
+      "field": "max_results",
+      "expected": "integer",
+      "received": "string"
+    }
+  }
+}
+```
+
+### Solution
+
+```python
+# Wrong type
+# result = await client.query(
+#     query="test",
+#     store_id="default",
+#     max_results="5"  # String instead of int!
+# )
+
+# Correct type
+# result = await client.query(
+#     query="test",
+#     store_id="default",
+#     max_results=5  # Integer
+# )
+```
+
+## Error: Invalid Store ID
+
+```json
+{
+  "error": {
+    "code": "store_not_found",
+    "message": "Store not found",
+    "details": {
+      "store_id": "my-store"
+    }
+  }
+}
+```
+
+### Common Causes
+
+1. **Typo in store ID**
+2. **Store was deleted**
+3. **Case sensitivity**
+
+### Solution
+
+```python
+# Use "default" store for general queries
+# result = await client.query(
+#     query="What is photosynthesis?",
+#     store_id="default"  # Always available
+# )
+
+# List available stores
+# stores = await client.list_stores()
+# print(f"Available stores: {stores}")
+```
+
+## Error: Query Too Long
+
+```json
+{
+  "error": {
+    "code": "validation_error",
+    "message": "Query exceeds maximum length",
+    "details": {
+      "field": "query",
+      "max_length": 1000,
+      "actual_length": 1523
+    }
+  }
+}
+```
+
+### Solution
+
+```python
+# Check query length
+query = "Very long query..."
+if len(query) > 1000:
+    # Truncate or split into multiple queries
+    query = query[:1000]
+
+# result = await client.query(query=query, store_id="default")
+```
+
+## Error: Invalid Filter Format
+
+```json
+{
+  "error": {
+    "code": "validation_error",
+    "message": "Invalid filter format",
+    "details": {
+      "field": "filters",
+      "reason": "Filters must be a dictionary"
+    }
+  }
+}
+```
+
+### Solution
+
+```python
+# Wrong format
+# result = await client.query(
+#     query="test",
+#     store_id="default",
+#     filters="grade=6"  # String!
+# )
+
+# Correct format
+# result = await client.query(
+#     query="test",
+#     store_id="default",
+#     filters={"grade": ["6", "7", "8"]}  # Dictionary
+# )
+```
+
+## Error: Invalid Parameter Value
+
+```json
+{
+  "error": {
+    "code": "validation_error",
+    "message": "Invalid value for max_results",
+    "details": {
+      "field": "max_results",
+      "min": 1,
+      "max": 100,
+      "received": 500
+    }
+  }
+}
+```
+
+### Solution
+
+```python
+# Value out of range
+# result = await client.query(
+#     query="test",
+#     store_id="default",
+#     max_results=500  # Too high!
+# )
+
+# Valid range
+# result = await client.query(
+#     query="test",
+#     store_id="default",
+#     max_results=10  # Between 1-100
+# )
+```
+
+## Request Schema
+
+### Query API
+
+```python
+{
+    "query": str,           # Required, 1-1000 characters
+    "store_id": str,        # Required, valid store ID
+    "filters": dict,        # Optional, key-value pairs
+    "max_results": int,     # Optional, 1-100, default: 5
+    "include_citations": bool  # Optional, default: true
+}
+```
+
+### Valid Example
+
+```python
+# result = await client.query(
+#     query="What is photosynthesis?",
+#     store_id="default",
+#     filters={
+#         "grade": ["6", "7", "8"],
+#         "subject": ["Science"]
+#     },
+#     max_results=10,
+#     include_citations=True
+# )
+```
+
+## Common Validation Errors
+
+### 1. Empty String
+
+```python
+# Empty query
+# result = await client.query(query="", store_id="default")
+
+# Non-empty query
+# result = await client.query(query="test", store_id="default")
+```
+
+### 2. Null/None Values
+
+```python
+# None value
+# result = await client.query(query=None, store_id="default")
+
+# Valid string
+# result = await client.query(query="test", store_id="default")
+```
+
+### 3. Special Characters
+
+```python
+# Some special characters might need encoding
+import urllib.parse
+
+query = "What is CO₂?"
+encoded_query = urllib.parse.quote(query)
+
+# Most SDKs handle this automatically
+# result = await client.query(query=query, store_id="default")
+```
+
+### 4. Unicode Characters
+
+```python
+# Unicode is supported
+# result = await client.query(
+#     query="ප්‍රභාසංශ්ලේෂණය යනු කුමක්ද?",  # Sinhala
+#     store_id="default"
+# )
+```
+
+## Input Validation Helper
+
+```python
+def validate_query_request(query: str, store_id: str, max_results: int = 5):
+    """Validate request before sending to API"""
+    errors = []
+
+    # Validate query
+    if not query:
+        errors.append("Query is required")
+    elif len(query) > 1000:
+        errors.append(f"Query too long ({len(query)} chars, max 1000)")
+    elif len(query) < 3:
+        errors.append("Query too short (min 3 chars)")
+
+    # Validate store_id
+    if not store_id:
+        errors.append("Store ID is required")
+
+    # Validate max_results
+    if not isinstance(max_results, int):
+        errors.append("max_results must be an integer")
+    elif max_results < 1 or max_results > 100:
+        errors.append("max_results must be between 1 and 100")
+
+    if errors:
+        raise ValueError(f"Validation errors: {', '.join(errors)}")
+
+    return True
+
+# Usage
+# try:
+#     validate_query_request("What is photosynthesis?", "default", 10)
+#     result = await client.query(query="What is photosynthesis?", store_id="default")
+# except ValueError as e:
+#     print(f"Invalid request: {e}")
+```
+
+## Type Checking with TypeScript
+
+```typescript
+import { BrainusAI, QueryRequest } from "@brainus/ai";
+
+const client = new BrainusAI({ apiKey: process.env.BRAINUS_API_KEY });
+
+// TypeScript enforces types
+const request: QueryRequest = {
+  query: "What is photosynthesis?", // string
+  storeId: "default", // string
+  maxResults: 10, // number
+  filters: {
+    // Record<string, string[]>
+    grade: ["6", "7", "8"],
+  },
+};
+
+const result = await client.query(request);
+```
+
+## Debugging Validation Errors
+
+### 1. Check Request Payload
+
+```python
+import json
+
+# Print request before sending
+request_data = {
+    "query": "test",
+    "store_id": "default",
+    "max_results": 10
+}
+
+print("Request:", json.dumps(request_data, indent=2))
+
+result = client.query(**request_data)
+```
+
+### 2. Use Schema Validation
+
+```python
+from pydantic import BaseModel, validator
+
+class QueryRequest(BaseModel):
+    query: str
+    store_id: str
+    max_results: int = 5
+
+    @validator('query')
+    def validate_query(cls, v):
+        if len(v) < 3:
+            raise ValueError("Query too short")
+        if len(v) > 1000:
+            raise ValueError("Query too long")
+        return v
+
+    @validator('max_results')
+    def validate_max_results(cls, v):
+        if not 1 <= v <= 100:
+            raise ValueError("max_results must be 1-100")
+        return v
+
+# Validate before calling API
+request = QueryRequest(
+    query="What is photosynthesis?",
+    store_id="default",
+    max_results=10
+)
+
+result = client.query(**request.dict())
+```
+
+## Quick Fix Checklist
+
+When you get validation errors:
+
+- [ ] Verify all required fields are present
+- [ ] Check field types match expected types
+- [ ] Confirm values are within valid ranges
+- [ ] Review store_id exists
+- [ ] Check query length (3-1000 chars)
+- [ ] Validate filter format (dict)
+- [ ] Test with minimal request first
+
+<Callout type="tip">
+  Enable debug logging to see the exact request being sent: ```python import
+  logging logging.basicConfig(level=logging.DEBUG) ```
+</Callout>
+
+## Next Steps
+
+- **[Common Errors](/docs/errors/common)** - Other frequent errors
+- **[API Reference](/docs/api-reference/query)** - Full request schema
+- **[Examples](/docs/examples)** - Working code examples

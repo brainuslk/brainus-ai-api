@@ -1,0 +1,389 @@
+---
+title: Common Errors
+description: Most frequent errors and how to fix them
+---
+
+import { Callout } from "fumadocs-ui/components/callout";
+import { TypeTable } from "fumadocs-ui/components/type-table";
+
+The most common errors you'll encounter and how to resolve them quickly.
+
+## Invalid API Key
+
+**Error Code:** `authentication_failed`
+
+<TypeTable
+  type={{
+    code: {
+      description: "Error code identifier",
+      type: "string",
+      default: "authentication_failed",
+      required: true,
+    },
+    message: {
+      description: "Human-readable error message",
+      type: "string",
+      default: "Invalid API key",
+      required: true,
+    },
+    details: {
+      description: "Additional error details",
+      type: "{ reason: string }",
+      required: false,
+    },
+  }}
+/>
+
+Example:
+
+```json
+{
+  "error": {
+    "code": "authentication_failed",
+    "message": "Invalid API key",
+    "details": {
+      "reason": "The provided API key is invalid or has been revoked"
+    }
+  }
+}
+```
+
+**Causes:**
+
+<TypeTable
+  type={{
+    code: {
+      description: "Error code identifier",
+      type: "string",
+      default: "rate_limit_exceeded",
+      required: true,
+    },
+    message: {
+      description: "Human-readable error message",
+      type: "string",
+      default: "Rate limit exceeded",
+      required: true,
+    },
+    retry_after: {
+      description: "Seconds to wait before retrying",
+      type: "number",
+      required: true,
+    },
+  }}
+/>
+
+Example:
+
+- API key is incorrect or has typos
+- API key has been revoked
+- Using test key in production or vice versa
+
+**Solutions:**
+
+1. Check your API key matches exactly
+2. Verify the key exists in [Dashboard → API Keys](https://developers.brainus.lk/dashboard/keys)
+3. Generate a new key if needed
+
+```python
+# Common mistake
+# client = BrainusAI(api_key="brainus_1234567890")  # Incomplete key
+
+# Correct
+# client = BrainusAI(api_key="brainus_1234567890abcdef1234567890abcdef")
+```
+
+## Rate Limit Exceeded
+
+**Error Code:** `rate_limit_exceeded`
+
+```json
+{
+  "error": {
+    "code": "rate_limit_exceeded",
+    "message": "Rate limit exceeded",
+    "retry_after": 30
+  }
+}
+```
+
+**Causes:**
+
+- Sending requests too quickly
+- Hitting daily or monthly quota
+- Multiple processes using same API key
+
+**Solutions:**
+
+```python
+<TypeTable
+  type={{
+    code: {
+      description: "Error code identifier",
+      type: "string",
+      default: "validation_error",
+      required: true,
+    },
+    message: {
+      description: "Human-readable error message",
+      type: "string",
+      default: "Missing required field: query",
+      required: true,
+    },
+    details: {
+      description: "Validation error details",
+      type: "{ field: string; reason: string }",
+      required: false,
+    },
+  }}
+/>
+
+Example:
+from brainus_ai import BrainusAI, RateLimitError
+import asyncio
+import os
+
+async def query_with_retry():
+    # async with BrainusAI(...) as client:
+    try:
+        result = await client.query(query="test", store_id="default")
+    except RateLimitError as e:
+        print(f"Rate limited. Waiting {e.retry_after}s...")
+<TypeTable
+  type={{
+    code: {
+      description: "Error code identifier",
+      type: "string",
+      default: "store_not_found",
+      required: true,
+    },
+    message: {
+      description: "Human-readable error message",
+      type: "string",
+      default: "Store not found",
+      required: true,
+    },
+    details: {
+      description: "Store lookup details",
+      type: "{ store_id: string }",
+      required: false,
+    },
+  }}
+/>
+
+Example:
+        await asyncio.sleep(e.retry_after)
+        # Retry
+```
+
+<Callout type="tip">
+  See [Rate Limit Errors](/docs/errors/rate-limits) for detailed handling
+  strategies.
+</Callout>
+
+## Missing Required Fields
+
+**Error Code:** `validation_error`
+
+```json
+{
+  "error": {
+    "code": "validation_error",
+    "message": "Missing required field: query",
+    "details": {
+      "field": "query",
+      "reason": "This field is required"
+    }
+  }
+}
+```
+
+**Causes:**
+
+- Forgot to include `query` parameter
+- Misspelled field name
+- Empty string provided
+
+**Solutions:**
+
+```python
+# Missing query
+# result = await client.query(store_id="default")  # Error!
+
+# Correct
+# result = await client.query(query="What is photosynthesis?", store_id="default")
+```
+
+## Store Not Found
+
+**Error Code:** `store_not_found`
+
+```json
+{
+  "error": {
+    "code": "store_not_found",
+    "message": "Store not found",
+    "details": {
+      "store_id": "invalid_store"
+    }
+  }
+}
+```
+
+**Causes:**
+
+- Incorrect `store_id`
+- Store was deleted
+- Typo in store name
+
+**Solutions:**
+
+```python
+# Use "default" store for general queries
+# result = await client.query(
+#     query="What is photosynthesis?",
+#     store_id="default"  # Always available
+# )
+```
+
+## Timeout Error
+
+**Error Code:** `request_timeout`
+
+```json
+{
+  "error": {
+    "code": "request_timeout",
+    "message": "Request timed out after 30 seconds"
+  }
+}
+```
+
+**Causes:**
+
+- Network issues
+- Server overload
+- Very complex query
+
+**Solutions:**
+
+```python
+# Increase timeout (if SDK allows configuration in constructor)
+# client = BrainusAI(
+#     api_key=os.getenv("BRAINUS_API_KEY"),
+#     timeout=60.0  # seconds
+# )
+
+# Or retry
+import asyncio
+# from brainus_ai.exceptions import TimeoutError
+
+# try:
+#     result = await client.query(query="test", store_id="default")
+# except TimeoutError:
+#     print("Request timed out, retrying...")
+#     result = await client.query(query="test", store_id="default")
+```
+
+## Server Error (500)
+
+**Error Code:** `internal_server_error`
+
+```json
+{
+  "error": {
+    "code": "internal_server_error",
+    "message": "An internal server error occurred"
+  }
+}
+```
+
+**Causes:**
+
+- Temporary server issue
+- Service degradation
+- Bug in API
+
+**Solutions:**
+
+1. **Retry with exponential backoff**
+
+```python
+import asyncio
+# from brainus_ai.exceptions import ServerError
+
+async def retry_on_server_error(func, max_retries=3):
+    for attempt in range(max_retries):
+        try:
+            return await func()
+        except ServerError:
+            if attempt == max_retries - 1:
+                raise
+            wait_time = 2 ** attempt
+            print(f"Server error, retrying in {wait_time}s...")
+            await asyncio.sleep(wait_time)
+
+# result = await retry_on_server_error(
+#     lambda: client.query(query="test", store_id="default")
+# )
+```
+
+2. **Check status page:** [status.brainus.lk](https://status.brainus.lk)
+3. **Contact support** if persistent: [developers@brainus.lk](mailto:developers@brainus.lk)
+
+## Network Connection Error
+
+**Causes:**
+
+- No internet connection
+- Firewall blocking requests
+- DNS issues
+
+**Solutions:**
+
+```python
+# from aiohttp import ClientConnectionError
+
+# try:
+#     result = await client.query(query="test", store_id="default")
+# except ClientConnectionError as e:
+#     print("Network error:", e)
+#     # Check your internet connection
+```
+
+## Quick Debugging Checklist
+
+When you encounter an error:
+
+1. Check the error code and message
+2. Verify API key is correct
+3. Confirm all required fields are provided
+4. Check rate limit headers
+5. Review request payload
+6. Check server status
+7. Enable debug logging
+
+## Enable Debug Logging
+
+```python
+import logging
+from brainus_ai import BrainusAI
+
+# Enable debug logging
+logging.basicConfig(level=logging.DEBUG)
+
+# client = BrainusAI(api_key="brainus_your_key")
+
+# Now you'll see detailed request/response logs
+# result = await client.query(query="test", store_id="default")
+```
+
+<Callout type="info">
+  Still stuck? Email [developers@brainus.lk](mailto:developers@brainus.lk) with
+  your error details.
+</Callout>
+
+## Next Steps
+
+- **[Authentication Errors](/docs/errors/authentication)** - API key issues
+- **[Rate Limit Errors](/docs/errors/rate-limits)** - Quota handling
+- **[Validation Errors](/docs/errors/validation)** - Request validation

@@ -1,0 +1,252 @@
+---
+title: Usage API
+description: Track and monitor your API usage and quotas
+---
+
+import { Callout } from "fumadocs-ui/components/callout";
+import { TypeTable } from "fumadocs-ui/components/type-table";
+
+The Usage API allows you to retrieve usage statistics for your API key, including request counts, token consumption, costs, and quota status for the current billing period.
+
+## Endpoint
+
+```
+GET /api/v1/dev/usage
+```
+
+**Base URL:** `https://api.brainus.lk`
+
+## Authentication
+
+Requires a valid API key in the `X-API-Key` header.
+
+## Quick Example
+
+```bash
+curl -X GET "https://api.brainus.lk/api/v1/dev/usage" \
+  -H "X-API-Key: $BRAINUS_API_KEY"
+```
+
+## Response Structure
+
+<TypeTable
+  type={{
+    total_requests: {
+      description: "Total number of API requests made in the current period",
+      type: "number",
+      required: true,
+    },
+    total_tokens: {
+      description: "Total number of tokens consumed across all requests",
+      type: "number",
+      required: true,
+    },
+    total_cost_usd: {
+      description: "Total cost in USD for all API requests in the period",
+      type: "number",
+      required: true,
+    },
+    by_endpoint: {
+      description: "Request count breakdown by endpoint",
+      type: "object",
+      required: true,
+    },
+    period_start: {
+      description: "Start date of the billing period (YYYY-MM-DD format)",
+      type: "string",
+      required: true,
+    },
+    period_end: {
+      description: "End date of the current period (today's date)",
+      type: "string",
+      required: true,
+    },
+    plan: {
+      description: "Current plan details including rate limits and quotas",
+      type: "PlanInfo",
+      required: true,
+    },
+    quota_remaining: {
+      description:
+        "Number of requests remaining in monthly quota. null for unlimited plans.",
+      type: "number | null",
+      required: true,
+    },
+    quota_percentage: {
+      description: "Percentage of monthly quota used (0-100)",
+      type: "number",
+      required: true,
+    },
+  }}
+/>
+
+## PlanInfo Object
+
+<TypeTable
+  type={{
+    name: {
+      description: "Name of your current plan (Free, Starter, Pro, Enterprise)",
+      type: "string",
+      required: true,
+    },
+    rate_limit_per_minute: {
+      description: "Maximum requests allowed per minute",
+      type: "number",
+      required: true,
+    },
+    rate_limit_per_day: {
+      description: "Maximum requests allowed per day",
+      type: "number",
+      required: true,
+    },
+    monthly_quota: {
+      description: "Total monthly request quota. null for unlimited plans.",
+      type: "number | null",
+      required: true,
+    },
+  }}
+/>
+
+## Example Response
+
+```json
+{
+  "total_requests": 86,
+  "total_tokens": 149434,
+  "total_cost_usd": 0.014382,
+  "by_endpoint": {
+    "/api/v1/dev/query": 86
+  },
+  "period_start": "2025-12-01",
+  "period_end": "2025-12-13",
+  "plan": {
+    "name": "Free",
+    "rate_limit_per_minute": 10,
+    "rate_limit_per_day": 300,
+    "monthly_quota": 300
+  },
+  "quota_remaining": 214,
+  "quota_percentage": 28.67
+}
+```
+
+## Understanding the Response
+
+### Usage Statistics
+
+- **total_requests**: Counts all API calls made during the current billing period
+- **total_tokens**: Cumulative token usage across all requests (for cost tracking)
+- **total_cost_usd**: Total cost in USD calculated based on token usage and model pricing
+
+### Billing Period
+
+The billing period resets on the 1st of each month. The `period_start` and `period_end` fields show the current period being tracked.
+
+### Quota Management
+
+Monitor your quota consumption:
+
+- **quota_remaining**: Shows how many requests you have left this month
+- **quota_percentage**: Shows percentage of your monthly quota used
+- Set up alerts when `quota_percentage` exceeds certain thresholds (e.g., 80%, 90%)
+
+### Endpoint Breakdown
+
+The `by_endpoint` object shows request distribution across different API endpoints:
+
+```json
+{
+  "by_endpoint": {
+    "/api/v1/dev/query": 86
+  }
+}
+```
+
+This helps you understand which endpoints are consuming your quota.
+
+## Code Examples
+
+### Python SDK
+
+```python
+import asyncio
+from brainus_ai import BrainusAI
+
+async def main():
+    client = BrainusAI(api_key="your_api_key_here")
+    
+    # Get usage statistics
+    stats = await client.get_usage()
+    
+    print(f"Requests used: {stats.total_requests}/{stats.plan.monthly_quota}")
+    print(f"Quota remaining: {stats.quota_remaining}")
+    print(f"Total cost: ${stats.total_cost_usd:.4f}")
+    print(f"Quota percentage: {stats.quota_percentage:.1f}%")
+
+asyncio.run(main())
+```
+
+### JavaScript SDK
+
+```javascript
+import { BrainusAI } from '@brainus/ai';
+
+const client = new BrainusAI({ apiKey: 'your_api_key_here' });
+
+// Get usage statistics
+const stats = await client.getUsage();
+
+console.log(`Requests used: ${stats.totalRequests}/${stats.plan.monthlyQuota}`);
+console.log(`Quota remaining: ${stats.quotaRemaining}`);
+console.log(`Total cost: $${stats.totalCostUsd.toFixed(4)}`);
+console.log(`Quota percentage: ${stats.quotaPercentage.toFixed(1)}%`);
+```
+
+## Best Practices
+
+### Monitor Quota Usage
+
+Check your usage regularly to avoid hitting quota limits:
+
+```python
+def check_quota_alert(usage):
+    percentage = usage['quota_percentage']
+
+    if percentage >= 90:
+        print("⚠️ WARNING: 90% quota used!")
+    elif percentage >= 80:
+        print("⚠️ ALERT: 80% quota used")
+    else:
+        print(f"✅ Quota usage: {percentage:.1f}%")
+```
+
+### Track Cost Trends
+
+Monitor your costs over time to optimize usage:
+
+```python
+# Store daily cost data
+daily_costs = []
+
+usage = get_usage()
+daily_costs.append({
+    'date': usage['period_end'],
+    'cost': usage['total_cost_usd'],
+    'requests': usage['total_requests']
+})
+
+# Calculate cost per request
+cost_per_request = usage['total_cost_usd'] / usage['total_requests']
+print(f"Average cost per request: ${cost_per_request:.6f}")
+```
+
+<Callout type="info">
+  Usage statistics are updated in real-time. Check this endpoint anytime to get
+  your current usage status.
+</Callout>
+
+## Related Resources
+
+- **[Query API](/docs/api-reference/query)** - Main API for querying documents
+- **[Rate Limits](/docs/rate-limits)** - Understanding rate limit behavior
+- **[Plans & Pricing](/docs/api-reference/query/model-selection)** - View available plans

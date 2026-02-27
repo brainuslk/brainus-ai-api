@@ -1,0 +1,79 @@
+---
+title: Go SDK
+description: Official Go SDK (Coming Soon)
+---
+
+import { Callout } from "fumadocs-ui/components/callout";
+
+The official Go SDK is currently in development.
+
+<Callout type="info">
+  In the meantime, you can use our REST API directly with the standard library
+  or any HTTP client.
+</Callout>
+
+## Using REST API
+
+```go
+package main
+
+import (
+    "bytes"
+    "encoding/json"
+    "fmt"
+    "io"
+    "net/http"
+    "os"
+)
+
+type QueryRequest struct {
+    Query   string `json:"query"`
+    StoreID string `json:"store_id"`
+}
+
+type QueryResponse struct {
+    Answer    string     `json:"answer"`
+    Citations []Citation `json:"citations"`
+}
+
+type Citation struct {
+    Document string `json:"document"`
+    Page     int    `json:"page"`
+}
+
+func main() {
+    apiKey := os.Getenv("BRAINUS_API_KEY")
+
+    reqBody := QueryRequest{
+        Query:   "What is photosynthesis?",
+        StoreID: "default",
+    }
+
+    jsonData, _ := json.Marshal(reqBody)
+
+    req, _ := http.NewRequest(
+        "POST",
+        "https://api.brainus.lk/api/v1/query",
+        bytes.NewBuffer(jsonData),
+    )
+
+    req.Header.Set("Content-Type", "application/json")
+    req.Header.Set("X-API-Key", apiKey)
+
+    client := &http.Client{}
+    resp, _ := client.Do(req)
+    defer resp.Body.Close()
+
+    body, _ := io.ReadAll(resp.Body)
+
+    var result QueryResponse
+    json.Unmarshal(body, &result)
+
+    fmt.Printf("Answer: %s\n", result.Answer)
+}
+```
+
+## Next Steps
+
+- [Go Examples](/docs/examples/go)
+- [REST API Reference](/docs/api-reference/query)

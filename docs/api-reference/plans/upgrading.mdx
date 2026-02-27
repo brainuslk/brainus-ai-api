@@ -1,0 +1,153 @@
+---
+title: Upgrading Your Plan
+description: Learn how to upgrade your BrainUs API plan
+---
+
+import { Callout } from "fumadocs-ui/components/callout";
+
+Learn how to upgrade your plan, what happens during the upgrade, and how billing works.
+
+## How to Upgrade
+
+### Via Dashboard
+
+1. Go to **[Dashboard → Settings → Billing](https://developers.brainus.lk/dashboard/settings)**
+2. Click **"Upgrade Plan"**
+3. Select your desired plan (Pro or Enterprise)
+4. Complete payment with credit card or invoice
+5. New limits apply immediately
+
+### Via API (Coming Soon)
+
+Programmatic upgrades will be available soon:
+
+```python
+# Future API (not yet available)
+client.upgrade_plan(
+    plan_id="plan_pro",
+    billing_period="yearly"
+)
+```
+
+### Contact Sales (Enterprise)
+
+For Enterprise plans:
+
+- Email: [developers@brainus.lk](mailto:developers@brainus.lk)
+- Phone: +94 11 234 5678
+- [Schedule a call](https://brainus.lk/contact)
+
+## What Happens When You Upgrade
+
+### Immediate Effects
+
+**New rate limits** apply instantly
+**Additional API keys** available immediately
+**Advanced features** enabled right away
+**Existing API keys** continue to work
+
+### Billing
+
+- **Prorated charges** for mid-cycle upgrades
+- **No downtime** during the upgrade
+- **Keep all your data** and settings
+- **Invoice sent** to your email
+
+<Callout type="info">
+  When you upgrade, you're only charged the prorated difference for the
+  remaining billing period.
+</Callout>
+
+## Downgrading
+
+### How to Downgrade
+
+1. Go to **Dashboard → Settings → Billing**
+2. Click **"Change Plan"**
+3. Select a lower plan
+4. Confirm the change
+
+### What to Know
+
+- ⚠️ **Lower limits** apply immediately
+- ⚠️ **Excess API keys** will be disabled
+- ⚠️ **Advanced features** may be removed
+- **Credit applied** to next billing cycle
+
+<Callout type="warn">
+  If you've exceeded the new plan's quota when downgrading, API requests will be
+  rate-limited until the next billing period.
+</Callout>
+
+## Free Trial
+
+### Try Pro Free
+
+New accounts get:
+
+- 14-day free trial of Pro plan
+- No credit card required
+- Full Pro features
+- Auto-downgrades to Free after trial
+
+### How to Start Trial
+
+1. Sign up at [developers.brainus.lk](https://developers.brainus.lk)
+2. Verify your email
+3. Pro trial starts automatically
+4. Add payment method before trial ends to continue
+
+## Frequently Asked Questions
+
+### Can I change plans at any time?
+
+Yes! You can upgrade or downgrade at any time. Changes take effect immediately.
+
+### What happens to my API keys?
+
+All your existing API keys remain valid and automatically inherit the new plan's rate limits.
+
+### Do you offer refunds?
+
+We offer a 30-day money-back guarantee on all paid plans. Contact [developers@brainus.lk](mailto:developers@brainus.lk) for refunds.
+
+### Can I switch between monthly and yearly billing?
+
+Yes, you can switch billing periods at any time. The change applies at your next billing date.
+
+### What payment methods do you accept?
+
+- Credit/debit cards (Visa, Mastercard, Amex)
+- Bank transfers (Enterprise only)
+- Invoicing (Enterprise only)
+
+### Is there a setup fee?
+
+No setup fees for any plan. You only pay the monthly or yearly subscription price.
+
+### Can I pause my subscription?
+
+Free plans don't require payment. Paid plans can be downgraded to Free at any time, which effectively pauses your subscription.
+
+## Enterprise Custom Plans
+
+Need something different? We can customize:
+
+- **Rate limits** - Higher or custom limits
+- **Features** - Custom integrations
+- **Support** - Dedicated engineer
+- **SLA** - Custom uptime guarantees
+- **Billing** - Annual contracts, volume discounts
+
+Contact [developers@brainus.lk](mailto:developers@brainus.lk) to discuss your requirements.
+
+<Callout type="tip">
+  Enterprise customers get volume discounts for high-volume usage. Contact sales
+  for a quote.
+</Callout>
+
+## Next Steps
+
+- **[Plan Comparison](/docs/api-reference/plans/comparison)** - Compare all features
+- **[Rate Limits](/docs/rate-limits)** - Understanding quotas
+- **[Usage Tracking](/docs/api-reference/usage)** - Monitor your usage

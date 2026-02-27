@@ -1,0 +1,252 @@
+---
+title: Comparisons
+description: How BrainUs AI differs from other educational AI APIs
+icon: GitCompareArrows
+---
+
+import { Callout } from "fumadocs-ui/components/callout";
+import { Accordion, Accordions } from "fumadocs-ui/components/accordion";
+
+## Overview
+
+BrainUs AI is built specifically for developers who need reliable, citation-backed educational content. Unlike other solutions that use simple API proxies or manual PDF selection, BrainUs uses advanced RAG (Retrieval-Augmented Generation) technology to provide accurate, curriculum-aligned responses.
+
+## Apilage AI
+
+Apilage AI offers an API for educational chatbots, but with several limitations compared to BrainUs.
+
+### Architecture Differences
+
+**Apilage AI:** Uses direct Gemini API calls without true fine-tuning or RAG. Responses lack verifiable citations and curriculum alignment.
+
+**BrainUs AI:** Purpose-built RAG system with 1000+ indexed curriculum documents. Every response includes verified citations with page numbers.
+
+### Feature Comparison
+
+| Feature                  | BrainUs AI                       | Apilage AI                 |
+| ------------------------ | -------------------------------- | -------------------------- |
+| **API Access**           | All plans (Free starts at LKR 0) | Power User plan (Rs. 1000) |
+| **Architecture**         | RAG with document retrieval      | Direct LLM API proxy       |
+| **Citations**            | Yes, with page numbers           | No                         |
+| **Token Pricing**        | 300 requests/month (Free)        | 150,000 tokens (60 days)   |
+| **Validity**             | Monthly recurring                | 60 days expiry             |
+| **Rate Limits**          | 10/min (Free), 60/min (Pro)      | Not documented             |
+| **Documentation**        | Comprehensive with SDKs          | Basic cURL example         |
+| **SDKs**                 | Python, JavaScript/TypeScript    | None                       |
+| **Curriculum Alignment** | Verified Sri Lankan curriculum   | Generic responses          |
+| **Language Support**     | Sinhala, English, Tamil          | Sinhala, English           |
+| **Free Tier**            | Yes (300 requests)               | No                         |
+| **Filters**              | Grade, subject, document filters | Not available              |
+| **Response Quality**     | Citation-backed, verified        | Unverified LLM output      |
+
+### Why Choose BrainUs?
+
+**Better Architecture:** RAG ensures responses are grounded in actual curriculum documents, not generic LLM knowledge.
+
+**Transparent Pricing:** Clear monthly limits with no token counting confusion. Free tier available.
+
+**Developer Experience:** Official SDKs, comprehensive docs, code examples, and full API reference.
+
+**Educational Focus:** Purpose-built for Sri Lankan curriculum with verified content sources.
+
+<Callout type="info">
+  Apilage AI's "150,000 tokens" translates to roughly 112,500 words or ~5,000
+  requests. BrainUs Free tier offers 300 requests with predictable limits.
+</Callout>
+
+## Apola AI
+
+Apola AI is a chat interface without a public API. Their approach requires manual grade/subject selection before each conversation.
+
+### Architecture Differences
+
+**Apola AI:** Uses a manual PDF selection mechanism. When you select grade/subject, it loads the relevant PDF and sends chunks with each query. No true AI-powered retrieval.
+
+**BrainUs AI:** Intelligent RAG system that automatically retrieves relevant content across all documents without manual selection. Smart filtering and semantic search.
+
+### Feature Comparison
+
+| Feature                   | BrainUs AI                      | Apola AI                       |
+| ------------------------- | ------------------------------- | ------------------------------ |
+| **API Availability**      | Yes, fully documented           | No public API                  |
+| **Developer Access**      | REST API + SDKs                 | Web interface only             |
+| **Content Selection**     | Automatic intelligent retrieval | Manual grade/subject selection |
+| **Multi-Document Search** | Yes, searches across all docs   | Single PDF per session         |
+| **Citations**             | Automatic with page numbers     | Manual PDF reference           |
+| **Integration**           | Any application via API         | Web interface only             |
+| **Scalability**           | Production-ready infrastructure | Limited to web UI              |
+| **Batch Processing**      | Yes                             | No                             |
+| **Rate Limits**           | Clear, documented limits        | Not applicable                 |
+| **Pricing Model**         | Transparent per-request         | Not applicable (no API)        |
+
+### Why Choose BrainUs?
+
+**API-First:** Built for developers to integrate into any application - mobile apps, web platforms, LMS, assessment tools.
+
+**Intelligent Retrieval:** No need to manually select grade/subject. BrainUs automatically finds relevant content across all curriculum materials.
+
+**Scalable:** Handle thousands of concurrent users with production-grade infrastructure.
+
+**Flexible:** Use filters when you want specificity, or let the AI find the best content automatically.
+
+## Feature Matrix
+
+Comprehensive comparison across all platforms:
+
+| Feature                   | BrainUs AI               | Apilage AI           | Apola AI         |
+| ------------------------- | ------------------------ | -------------------- | ---------------- |
+| **API Access**            | Yes                      | Yes (paid)           | No               |
+| **Free Tier**             | 300 requests/month       | No                   | N/A              |
+| **RAG Technology**        | Yes                      | No                   | Limited          |
+| **Verified Citations**    | Yes                      | No                   | Manual           |
+| **Official SDKs**         | Python, JavaScript       | None                 | N/A              |
+| **Documentation**         | Comprehensive            | Basic                | N/A              |
+| **Multi-Subject Search**  | Automatic                | Not available        | Manual selection |
+| **Grade Filtering**       | Programmatic filters     | Not available        | Manual selection |
+| **Response Time**         | Under 500ms (p95)        | Not disclosed        | Not applicable   |
+| **SLA**                   | 99.9% (Enterprise)       | Not disclosed        | N/A              |
+| **Usage Analytics**       | Real-time API            | Not documented       | N/A              |
+| **Rate Limits**           | Transparent, documented  | Not documented       | N/A              |
+| **Pricing Model**         | Per-request, predictable | Token-based, expires | N/A              |
+| **Citation Verification** | Page-level accuracy      | No citations         | Manual PDF       |
+| **Batch Processing**      | Yes                      | Not documented       | No               |
+| **Webhook Support**       | Yes (Pro+)               | No                   | N/A              |
+| **TypeScript Support**    | Full types               | No                   | N/A              |
+| **Async/Await**           | Native support           | Not documented       | N/A              |
+| **Error Handling**        | Rich error types         | Basic                | N/A              |
+| **Auto-Retry**            | Built-in SDK feature     | No                   | N/A              |
+
+## Why BrainUs AI?
+
+### True RAG Architecture
+
+BrainUs uses purpose-built RAG technology:
+
+```
+User Query -> Semantic Search -> Document Retrieval -> LLM Generation -> Cited Response
+```
+
+**Not** simple API proxying:
+
+```
+User Query -> Gemini API -> Generic Response (no citations)
+```
+
+### Developer-First Design
+
+Built for integration from day one:
+
+- REST API with OpenAPI spec
+- Official SDKs with type safety
+- Comprehensive documentation
+- Code examples in 4+ languages
+- Playground for testing
+
+### Transparent Pricing
+
+No hidden token counting or expiry dates:
+
+- **Free:** 300 requests/month (forever)
+- **Starter:** 2,000 requests/month at LKR 999
+- **Pro:** 10,000 requests/month at LKR 3,499
+- **Enterprise:** 50,000 requests/month at LKR 14,999 with SLA
+
+Compare to Apilage AI: Rs. 1000 for 150,000 tokens (expires in 60 days).
+
+### Production-Ready
+
+- 99.9% uptime SLA (Enterprise)
+- Sub-500ms p95 latency
+- Automatic rate limit handling
+- Built-in retry logic
+- Real-time usage monitoring
+
+### Educational Focus
+
+1,000+ verified curriculum documents:
+
+- Grades 6-13 coverage
+- All subjects (Maths, Science, History, Geography, etc.)
+- Official educational materials
+- Regular content updates
+- Multilingual support
+
+<Callout type="tip">
+  Moving from Apilage AI? We offer migration support and can help you transition
+  your integration. Contact
+  [developers@brainus.lk](mailto:developers@brainus.lk).
+</Callout>
+
+## Use Case Comparison
+
+### Educational Platforms
+
+**BrainUs AI:** API-first design allows seamless integration into any platform. Build tutoring systems, homework helpers, quiz generators.
+
+**Apilage AI:** Limited to basic chat completions. No educational-specific features like grade filtering or subject targeting.
+
+**Apola AI:** Web interface only. Cannot integrate into custom applications.
+
+### Assessment Tools
+
+**BrainUs AI:** Programmatic access to curriculum content with filters. Perfect for generating quizzes, flashcards, study materials.
+
+**Apilage AI:** Generic responses without curriculum grounding. Not suitable for assessment generation.
+
+**Apola AI:** Manual process. Not practical for automated assessment creation.
+
+### Learning Management Systems
+
+**BrainUs AI:** Direct API integration. Add AI-powered search and content discovery to your LMS.
+
+**Apilage AI:** Possible but limited integration. No LMS-specific features.
+
+**Apola AI:** No integration possible. External web interface only.
+
+## Getting Started
+
+Ready to experience the difference?
+
+1. **[Sign up for free](https://developers.brainus.lk)** - 300 requests/month, no credit card
+2. **[Read Quick Start](/docs/quick-start)** - Make your first request in 5 minutes
+3. **[Explore Examples](/docs/examples)** - See production-ready integration code
+4. **[Join Discord](https://discord.gg/3Y7KsR7qcW)** - Get help from the community
+
+## Questions?
+
+<Accordions>
+  <Accordion id="pricing-comparison" title="Why is BrainUs more expensive than Apilage AI's token model?">
+    BrainUs pricing is per-request, not per-token. This is more predictable and transparent. Our free tier (300 requests) is perfect for testing, and paid plans start at LKR 999/month for 2,000 requests.
+  </Accordion>
+
+{" "}
+<Accordion id="migration" title="Can I migrate from Apilage AI?">
+  Yes! Migration is straightforward. We provide migration guides and support.
+  Contact [developers@brainus.lk](mailto:developers@brainus.lk).
+</Accordion>
+
+{" "}
+<Accordion id="custom-content" title="Does BrainUs support custom content?">
+  Currently, BrainUs focuses on verified Sri Lankan curriculum content. Custom
+  content integration is on our roadmap for Enterprise plans.
+</Accordion>
+
+  <Accordion id="rag-benefits" title="What makes RAG better than direct LLM calls?">
+    RAG grounds responses in actual documents, providing:
+
+    - Verifiable citations
+    - Reduced hallucinations
+    - Curriculum-accurate content
+    - Transparent sourcing
+
+    Direct LLM calls can hallucinate facts and provide unverified information.
+
+  </Accordion>
+</Accordions>
+
+## Next Steps
+
+- **[Quick Start Guide](/docs/quick-start)** - Get started in minutes
+- **[API Reference](/docs/api-reference/query)** - Complete API documentation
+- **[Pricing](/docs/api-reference/plans)** - Compare all plans
+- **[Contact Sales](mailto:developers@brainus.lk)** - Enterprise inquiries

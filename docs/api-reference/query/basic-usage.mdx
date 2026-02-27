@@ -1,0 +1,276 @@
+---
+title: Basic Usage
+description: Learn how to make basic queries to the BrainUs API
+---
+
+import { Callout } from "fumadocs-ui/components/callout";
+import { Tab, Tabs } from "fumadocs-ui/components/tabs";
+
+Learn how to make your first queries to the BrainUs API using our official SDKs or direct HTTP requests.
+
+## Installation
+
+First, install the SDK for your preferred language:
+
+<Tabs items={["Python", "JavaScript"]}>
+  <Tab value="Python">```bash pip install brainus-ai ```</Tab>
+
+  <Tab value="JavaScript">
+    ```bash npm install @brainus/ai # or yarn add @brainus/ai ```
+  </Tab>
+</Tabs>
+
+## Simple Query
+
+The most basic query requires just a `query` parameter. The `store_id` is optional and defaults to the configured store.
+
+<Tabs items={['Python', 'JavaScript']}>
+  <Tab value="Python">
+    ```python
+    import asyncio
+    import os
+    from brainus_ai import BrainusAI
+
+    async def main():
+        # Initialize the client
+        client = BrainusAI(api_key=os.getenv("BRAINUS_API_KEY"))
+
+        # Make a simple query
+        response = await client.query(
+            query="What is photosynthesis?"
+            # store_id is optional - uses default if not provided
+        )
+
+        print(response.answer)
+
+        # Print citations
+        if response.has_citations:
+            for citation in response.citations:
+                print(f"  - {citation.document_name}")
+                if citation.pages:
+                    print(f"    Pages: {', '.join(map(str, citation.pages))}")
+
+    asyncio.run(main())
+    ```
+
+  </Tab>
+  
+  <Tab value="JavaScript">
+    ```javascript
+    import { BrainusAI } from '@brainus/ai';
+
+    // Initialize the client
+    const client = new BrainusAI({
+      apiKey: process.env.BRAINUS_API_KEY
+    });
+
+    // Make a simple query
+    const response = await client.query({
+      query: 'What is photosynthesis?'
+      // storeId is optional - uses default if not provided
+    });
+
+    console.log(response.answer);
+
+    // Print citations
+    if (response.hasCitations) {
+      response.citations.forEach(citation => {
+        console.log(`  - ${citation.documentName}`);
+        if (citation.pages.length > 0) {
+          console.log(`    Pages: ${citation.pages.join(", ")}`);
+        }
+      });
+    }
+    ```
+
+  </Tab>
+</Tabs>
+
+## Understanding the Response
+
+A successful query returns a JSON response with the answer and citations from source documents:
+
+```json
+{
+  "answer": "Photosynthesis is the biological process by which green plants convert light energy into chemical energy...",
+  "citations": [
+    {
+      "document_id": "",
+      "document_name": "Grade 10 Science Textbook - Biology Unit",
+      "pages": [45, 46],
+      "metadata": null,
+      "chunk_text": "Photosynthesis: 6CO2 + 6H2O + light energy → C6H12O6 + 6O2"
+    }
+  ],
+  "has_citations": true
+}
+```
+
+### Response Fields
+
+| Field                       | Description                                    |
+| --------------------------- | ---------------------------------------------- |
+| `answer`                    | AI-generated answer to your query              |
+| `citations`                 | Array of source documents with text excerpts   |
+| `citations[].document_id`   | Unique identifier for the document             |
+| `citations[].document_name` | Name of the source document                    |
+| `citations[].pages`         | Array of page numbers where content was found  |
+| `citations[].chunk_text`    | Relevant text excerpt from the source document |
+| `citations[].metadata`      | Additional metadata (may be null)              |
+| `has_citations`             | Boolean indicating if citations are included   |
+
+<Callout type="info">
+  Every response includes citations from official curriculum documents, ensuring
+  verifiable answers.
+</Callout>
+
+## Error Handling
+
+The SDKs provide built-in error handling with specific exception types:
+
+<Tabs items={['Python', 'JavaScript']}>
+  <Tab value="Python">
+    ```python
+    import asyncio
+    from brainus_ai import (
+        BrainusAI,
+        AuthenticationError,
+        RateLimitError,
+        QuotaExceededError,
+        APIError
+    )
+
+    async def main():
+        client = BrainusAI(api_key="your_api_key")
+
+        try:
+            response = await client.query(query="Your question")
+            print(response.answer)
+
+        except AuthenticationError as e:
+            print(f"Authentication failed: {e}")
+        except RateLimitError as e:
+            print(f"Rate limit exceeded: {e}")
+        except QuotaExceededError as e:
+            print(f"Quota exceeded: {e}")
+        except APIError as e:
+            print(f"API error: {e}")
+
+    asyncio.run(main())
+    ```
+
+  </Tab>
+  
+  <Tab value="JavaScript">
+    ```javascript
+    import { 
+      BrainusAI, 
+      AuthenticationError, 
+      RateLimitError,
+      QuotaExceededError,
+      APIError 
+    } from '@brainus/ai';
+
+    const client = new BrainusAI({ apiKey: 'your_api_key' });
+
+    try {
+      const response = await client.query({ query: 'Your question' });
+      console.log(response.answer);
+
+    } catch (error) {
+      if (error instanceof AuthenticationError) {
+        console.error('Authentication failed:', error.message);
+      } else if (error instanceof RateLimitError) {
+        console.error('Rate limit exceeded:', error.message);
+        if (error.retryAfter) {
+          console.error(`Retry after ${error.retryAfter} seconds`);
+        }
+      } else if (error instanceof QuotaExceededError) {
+        console.error('Quota exceeded:', error.message);
+      } else if (error instanceof APIError) {
+        console.error('API error:', error.message);
+      }
+    }
+    ```
+
+  </Tab>
+</Tabs>
+
+## Query with Filters
+
+Add filters to get more targeted results from specific subjects, grades, or years:
+
+<Tabs items={['Python', 'JavaScript']}>
+  <Tab value="Python">
+    ```python
+    from brainus_ai import BrainusAI, QueryFilters
+
+    client = BrainusAI(api_key="your_api_key")
+
+    response = await client.query(
+        query="Explain Newton's laws",
+        filters=QueryFilters(
+            subject="physics",
+            grade="11"
+        )
+    )
+
+    print(response.answer)
+    ```
+
+  </Tab>
+  
+  <Tab value="JavaScript">
+    ```javascript
+    import { BrainusAI } from '@brainus/ai';
+
+    const client = new BrainusAI({ apiKey: 'your_api_key' });
+
+    const response = await client.query({
+      query: "Explain Newton's laws",
+      filters: {
+        subject: 'physics',
+        grade: '11'
+      }
+    });
+
+    console.log(response.answer);
+    ```
+
+  </Tab>
+</Tabs>
+
+See [Filters & Options](/docs/api-reference/query/filters) for all available filter fields.
+
+## Selecting a Model
+
+Choose a specific model based on your plan:
+
+<Tabs items={['Python', 'JavaScript']}>
+  <Tab value="Python">
+    ```python
+    response = await client.query(
+        query="Your question",
+        model="brainusai-thinking"  # Must be in your plan's allowed_models
+    )
+    ```
+  </Tab>
+  
+  <Tab value="JavaScript">
+    ```javascript
+    const response = await client.query({
+      query: 'Your question',
+      model: 'brainusai-thinking'  // Must be in your plan's allowed_models
+    });
+    ```
+  </Tab>
+</Tabs>
+
+See [Model Selection](/docs/api-reference/query/model-selection) for available models per plan.
+
+## Next Steps
+
+- **[Filters & Options](/docs/api-reference/query/filters)** - Learn about filtering
+- **[Best Practices](/docs/api-reference/query/best-practices)** - Optimization tips
+- **[Model Selection](/docs/api-reference/query/model-selection)** - Choose the right model
+- **[Code Examples](/docs/examples)** - Full application examples

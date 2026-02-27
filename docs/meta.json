@@ -1,0 +1,21 @@
+{
+  "pages": [
+    "index",
+    "quick-start",
+    "comparisons",
+    "---Getting Started---",
+    "authentication",
+    "rate-limits",
+    "---API Reference---",
+    "api-reference/query",
+    "api-reference/usage",
+    "api-reference/plans",
+    "---Resources---",
+    "examples",
+    "sdks",
+    "errors",
+    "---Integrations---",
+    "integrations",
+    "api-playground"
+  ]
+}

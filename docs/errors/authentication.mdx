@@ -1,0 +1,373 @@
+---
+title: Authentication Errors
+description: Troubleshooting API key and authentication issues
+---
+
+import { Callout } from "fumadocs-ui/components/callout";
+
+Complete guide to resolving authentication and API key errors.
+
+## Error: Invalid API Key
+
+**HTTP Status:** `401 Unauthorized`
+
+```json
+{
+  "error": {
+    "code": "authentication_failed",
+    "message": "Invalid API key"
+  }
+}
+```
+
+### Common Causes
+
+1. **Typo in API key**
+
+```python
+# Typo or incomplete key
+# client = BrainusAI(api_key="brainus_1234")
+
+# Correct full key (loaded from env)
+# client = BrainusAI(api_key=os.getenv("BRAINUS_API_KEY"))
+```
+
+2. **Key was revoked**
+
+Check if your key still exists in the [Dashboard](https://developers.brainus.lk/dashboard/keys).
+
+3. **Wrong environment**
+
+```python
+# Using test key for production
+# client = BrainusAI(api_key="sk_test_...")  # Won't work in production
+
+# Use correct environment
+# client = BrainusAI(api_key=os.getenv("BRAINUS_API_KEY"))
+```
+
+### Solutions
+
+**Step 1:** Verify your API key
+
+```bash
+# Check environment variable
+echo $BRAINUS_API_KEY
+
+# Test the key
+curl -X POST "https://api.brainus.lk/api/v1/query" \
+  -H "X-API-Key: $BRAINUS_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"query": "test", "store_id": "default"}'
+```
+
+**Step 2:** Generate new key if needed
+
+1. Go to [Dashboard → API Keys](https://developers.brainus.lk/dashboard/keys)
+2. Click "Generate New Key"
+3. Update your environment variable
+
+## Error: Missing API Key
+
+**HTTP Status:** `401 Unauthorized`
+
+```json
+{
+  "error": {
+    "code": "missing_api_key",
+    "message": "API key is required"
+  }
+}
+```
+
+### Common Causes
+
+1. **Forgot to set environment variable**
+
+```bash
+# Check if set
+env | grep BRAINUS_API_KEY
+
+# If empty, set it
+export BRAINUS_API_KEY=brainus_your_key_here
+```
+
+2. **Not loading .env file**
+
+```python
+# Forgot to load .env
+from brainus_ai import BrainusAI
+import os
+
+# client = BrainusAI(api_key=os.getenv("BRAINUS_API_KEY"))  # None!
+
+# Load .env first
+from dotenv import load_dotenv
+import os
+
+load_dotenv()  # Important!
+client = BrainusAI(api_key=os.getenv("BRAINUS_API_KEY"))
+```
+
+3. **Header not set correctly**
+
+```bash
+# Wrong header
+curl -H "Authorization: Bearer brainus_..."
+
+# Correct header
+curl -H "X-API-Key: $BRAINUS_API_KEY"
+```
+
+## Error: API Key Revoked
+
+**HTTP Status:** `401 Unauthorized`
+
+```json
+{
+  "error": {
+    "code": "api_key_revoked",
+    "message": "This API key has been revoked"
+  }
+}
+```
+
+### What to Do
+
+1. Check if someone on your team revoked the key
+2. Generate a new key
+3. Update all services using the old key
+4. Set up alerts for key revocations
+
+## Error: Payment Required
+
+**HTTP Status:** `402 Payment Required`
+
+```json
+{
+  "detail": "No active plan found. Please subscribe to a Free or paid plan before creating API keys."
+}
+```
+
+### Common Causes
+
+1. **No active subscription** - You haven't subscribed to a developer plan yet
+
+2. **Subscription expired** - Your subscription has ended or been cancelled
+
+3. **Trialing subscription ended** - Trial period has expired
+
+### Solutions
+
+**Step 1:** Check your subscription status
+
+1. Go to [Dashboard → Settings → Billing](https://developers.brainus.lk/dashboard/settings?tab=billing)
+2. Check if you have an active subscription
+
+**Step 2:** Subscribe to a plan
+
+1. Go to [Upgrade](https://developers.brainus.lk/upgrade)
+2. Choose a Free or paid plan
+3. Complete the subscription (Free plan requires no credit card)
+4. Try creating your API key again
+
+**Step 3:** Verify subscription is active
+
+```bash
+# After subscribing, wait a few seconds for webhook processing
+# Then try creating your API key again
+```
+
+<Callout type="info">
+  The Free plan is perfect for getting started - no credit card required! All API keys are automatically assigned the plan from your active subscription.
+</Callout>
+
+## Error: Forbidden
+
+**HTTP Status:** `403 Forbidden`
+
+```json
+{
+  "error": {
+    "code": "forbidden",
+    "message": "API key does not have permission to access this resource"
+  }
+}
+```
+
+### Common Causes
+
+- Using a read-only key for write operations
+- API key restricted to specific IP addresses
+- Plan doesn't include this feature
+
+### Solutions
+
+```python
+# Check your plan limits using SDK (pseudo-code)
+# usage = await client.get_usage()
+# print(f"Plan: {usage.plan}")
+```
+
+## Debugging Authentication Issues
+
+### 1. Test API Key Directly
+
+```bash
+# Test with curl
+curl -i -X POST "https://api.brainus.lk/api/v1/query" \
+  -H "X-API-Key: $BRAINUS_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"query": "test", "store_id": "default"}'
+```
+
+### 2. Check Key Format
+
+Valid key format:
+
+- Starts with `brainus_` or `sk_test_`
+- 32+ characters long
+- Only alphanumeric characters
+
+```python
+import re
+import os
+
+def validate_key_format(api_key: str) -> bool:
+    pattern = r'^sk_(live|test)_[a-zA-Z0-9]{32,}$'
+    return bool(re.match(pattern, api_key))
+
+key = os.getenv("BRAINUS_API_KEY")
+if key and not validate_key_format(key):
+    print("Invalid key format!")
+```
+
+### 3. Enable Request Logging
+
+```python
+import logging
+import requests
+from brainus_ai import BrainusAI
+
+# Enable debug logging
+logging.basicConfig(level=logging.DEBUG)
+
+# See actual headers sent
+# client = BrainusAI(api_key="brainus_your_key")
+```
+
+### 4. Verify Environment
+
+```python
+import os
+
+# Print environment (hide sensitive parts)
+api_key = os.getenv("BRAINUS_API_KEY", "")
+if api_key:
+    print(f"Key found: {api_key[:10]}...{api_key[-4:]}")
+else:
+    print("BRAINUS_API_KEY not set!")
+```
+
+## Security Best Practices
+
+1. **Never log full API keys**
+
+```python
+# Bad: Logs full key
+# logging.info(f"Using key: {api_key}")
+
+# Good: Mask key
+logging.info(f"Using key: {api_key[:10]}...{api_key[-4:]}")
+```
+
+2. **Rotate keys regularly**
+
+```bash
+# Every 90 days
+0 0 1 */3 * /scripts/rotate-api-keys.sh
+```
+
+3. **Use different keys per environment**
+
+```bash
+# Development
+BRAINUS_API_KEY=sk_test_dev_key
+
+# Production
+BRAINUS_API_KEY=brainus_prod_key
+```
+
+## Common Mistakes
+
+### 1. Hardcoded Keys
+
+```python
+# NEVER do this
+# client = BrainusAI(api_key="brainus_1234567890abcdef")
+
+# Use environment variables
+from brainus_ai import BrainusAI
+import os
+client = BrainusAI(api_key=os.getenv("BRAINUS_API_KEY"))
+```
+
+### 2. Exposed in Frontend
+
+```javascript
+// NEVER expose in browser
+import { BrainusAI } from '@brainus/ai';
+
+// const client = new BrainusAI({
+//   apiKey: "brainus_1234567890...", // Visible to users!
+// });
+
+// Use backend proxy
+const response = await fetch("/api/query", {
+  method: "POST",
+  body: JSON.stringify({ query: "test" }),
+});
+```
+
+### 3. Committed to Git
+
+```bash
+# Add .env to .gitignore
+echo ".env" >> .gitignore
+
+# If you accidentally committed a key:
+# 1. Revoke it immediately
+# 2. Generate a new key
+# 3. Use git-secrets or similar tools
+```
+
+<Callout type="warn">
+  If you've exposed an API key publicly, **revoke it immediately** at [Dashboard
+  → API Keys](https://developers.brainus.lk/dashboard/keys).
+</Callout>
+
+## Quick Fix Checklist
+
+When authentication fails:
+
+- [ ] Verify API key is set: `echo $BRAINUS_API_KEY`
+- [ ] Check key format: `brainus_...` or `sk_test_...`
+- [ ] Confirm key exists in dashboard
+- [ ] **Check subscription status** - Ensure you have an active plan (Free or paid)
+- [ ] Test with curl command above
+- [ ] Check .env file is loaded
+- [ ] Verify correct header: `X-API-Key`
+- [ ] Review firewall/network settings
+
+When creating API keys fails (402 error):
+
+- [ ] Check subscription status at [Dashboard → Settings → Billing](https://developers.brainus.lk/dashboard/settings?tab=billing)
+- [ ] Subscribe to a plan at [Upgrade](https://developers.brainus.lk/upgrade) if needed
+- [ ] Wait a few seconds after subscribing for webhook processing
+- [ ] Try creating the API key again
+
+## Next Steps
+
+- **[Security Best Practices](/docs/authentication/security)** - Keep keys safe
+- **[Managing API Keys](/docs/authentication/managing-keys)** - Create and rotate keys
+- **[Common Errors](/docs/errors/common)** - Other frequent errors

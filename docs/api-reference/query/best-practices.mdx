@@ -1,0 +1,443 @@
+---
+title: Best Practices
+description: Optimization tips and patterns for using the Query API effectively
+---
+
+import { Callout } from "fumadocs-ui/components/callout";
+
+Follow these best practices to optimize your Query API usage, improve performance, and provide the best experience for your users.
+
+## Query Optimization
+
+### 1. Be Specific in Your Queries
+
+**Bad:**
+
+```json
+{ "query": "chemistry" }
+```
+
+**Good:**
+
+```json
+{ "query": "Explain the difference between ionic and covalent bonds" }
+```
+
+Specific queries produce more accurate and relevant results.
+
+### 2. Use Appropriate Filters
+
+Apply filters to reduce irrelevant results:
+
+```python
+from brainus_ai import BrainusAI, QueryFilters
+
+client = BrainusAI(api_key="your_api_key")
+
+# Better targeting with filters
+response = await client.query(
+    query="What is calculus?",
+    filters=QueryFilters(
+        subject="mathematics",
+        grade="12"
+    )
+)
+
+print(response.answer)
+```
+
+### 3. Keep Queries Focused
+
+Focus your queries for better results:
+
+```python
+from brainus_ai import BrainusAI
+
+client = BrainusAI(api_key="your_api_key")
+
+# For quick fact checks - be specific
+response = await client.query(
+    query="Define photosynthesis in one sentence"
+)
+
+# For comprehensive understanding - ask clearly
+response = await client.query(
+    query="Explain the complete process of photosynthesis including light and dark reactions"
+)
+```
+
+## Performance Optimization
+
+### 1. Cache Common Queries
+
+Cache frequently asked questions to reduce API calls:
+
+```python
+import time
+from brainus_ai import BrainusAI
+
+# Simple in-memory cache with TTL
+_cache = {}
+_cache_ttl = {}
+
+async def cached_query(client: BrainusAI, query: str, ttl_seconds: int = 3600):
+    """Cache query results with time-to-live."""
+    now = time.time()
+
+    # Check if cached and not expired
+    if query in _cache and now < _cache_ttl.get(query, 0):
+        print(f"✅ Cache hit for: {query}")
+        return _cache[query]
+
+    # Make API call
+    response = await client.query(query=query)
+
+    # Cache the result
+    _cache[query] = response
+    _cache_ttl[query] = now + ttl_seconds
+
+    print(f"📥 Cached: {query}")
+    return response
+
+# Usage
+client = BrainusAI(api_key="your_api_key")
+result1 = await cached_query(client, "What is photosynthesis?")  # API call
+result2 = await cached_query(client, "What is photosynthesis?")  # From cache
+```
+
+### 2. Implement Request Debouncing
+
+For user-facing search, debounce queries to avoid excessive API calls:
+
+```javascript
+// React example with debouncing
+import { useState, useEffect } from "react";
+
+function useDebouncedQuery(query, delay = 500) {
+  const [debouncedQuery, setDebouncedQuery] = useState(query);
+
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedQuery(query);
+    }, delay);
+
+    return () => clearTimeout(handler);
+  }, [query, delay]);
+
+  return debouncedQuery;
+}
+
+function SearchComponent() {
+  const [query, setQuery] = useState("");
+  const debouncedQuery = useDebouncedQuery(query);
+  const [results, setResults] = useState(null);
+
+  useEffect(() => {
+    if (debouncedQuery.length > 3) {
+      // Call your backend API
+      fetch("/api/query", {
+        method: "POST",
+        body: JSON.stringify({ query: debouncedQuery }),
+      })
+        .then((res) => res.json())
+        .then(setResults);
+    }
+  }, [debouncedQuery]);
+
+  return (
+    <input
+      value={query}
+      onChange={(e) => setQuery(e.target.value)}
+      placeholder="Search..."
+    />
+  );
+}
+```
+
+### 3. Use Batch Processing
+
+For multiple queries, process them efficiently:
+
+```python
+import asyncio
+from brainus_ai import BrainusAI, RateLimitError
+import os
+
+async def process_queries_batch(queries: list[str]):
+    """Process multiple queries with rate limit handling."""
+    client = BrainusAI(api_key=os.getenv("BRAINUS_API_KEY"))
+    results = []
+
+    for query in queries:
+        for query in queries:
+             try:
+                 # Respect rate limits - add delay if needed, though client handles retries
+                 res = await client.query(query, store_id="default")
+                 results.append(res)
+                 await asyncio.sleep(0.1) # Soft rate limit protection
+             except Exception as e:
+                 results.append({"error": str(e), "query": query})
+
+    return results
+
+# Usage
+# queries = [...]
+# results = asyncio.run(process_queries_batch(queries))
+```
+
+<Callout type="warn">
+  Always respect rate limits when batch processing. See [Rate
+  Limits](/docs/rate-limits) for details.
+</Callout>
+
+## Error Handling
+
+### 1. Implement Retry Logic with Exponential Backoff
+
+```python
+import asyncio
+from brainus_ai import BrainusAI, RateLimitError
+import os
+
+async def query_with_retry(query: str, max_retries: int = 3):
+    """Query with exponential backoff on rate limits."""
+
+    async with BrainusAI(api_key=os.getenv("BRAINUS_API_KEY")) as client:
+        for attempt in range(max_retries):
+            try:
+                return await client.query(query, store_id="default")
+            except RateLimitError as e:
+                if attempt < max_retries - 1:
+                    wait_time = 2 ** attempt  # 1s, 2s, 4s
+                    print(f"Rate limited. Waiting {wait_time}s...")
+                    await asyncio.sleep(wait_time)
+                    continue
+                raise
+```
+
+### 2. Handle All Error Types
+
+```python
+import asyncio
+from brainus_ai import (
+    BrainusAI,
+    BrainusError,
+    AuthenticationError,
+    RateLimitError,
+    ValidationError,
+    ServerError
+)
+import os
+
+async def safe_query(query: str):
+    async with BrainusAI(api_key=os.getenv("BRAINUS_API_KEY")) as client:
+        try:
+            return await client.query(query, store_id="default")
+        except AuthenticationError:
+            # Invalid API key - check configuration
+            print("Invalid API key")
+            return None
+        except RateLimitError as e:
+            # Client handles retries, but if it bubbles up:
+            await asyncio.sleep(e.retry_after)
+            # You might want to retry here manually
+            return None
+        except ValidationError as e:
+            # Invalid query parameters
+            print(f"Invalid query: {e.message}")
+            return None
+        except ServerError:
+            # Server error - contact support
+            print("Server error - contact support")
+            return None
+```
+
+## Citation Handling
+
+### 1. Always Display Citations
+
+Show users where information comes from:
+
+```python
+# Assuming 'response' is the result from an async query
+# response = await client.query(...)
+
+# Display answer
+# print(f"Answer: {response.answer}\n")
+
+# Display sources
+# if response.citations:
+#     print("Sources:")
+#     for citation in response.citations:
+#         print(f"  • {citation.document} (Page {citation.page})")
+#         print(f"    Relevance: {citation.relevance:.1%}")
+```
+
+### 2. Format Citations Properly
+
+```javascript
+// React component example
+// ... (Component remains similar, just data structure)
+```
+
+## Security Best Practices
+
+### 1. Never Expose API Keys Client-Side
+
+**Bad:**
+
+```javascript
+// NEVER do this in frontend code
+// const client = new BrainusAI({
+//   apiKey: "brainus_1234567890...", // Exposed to users!
+// });
+```
+
+**Good:**
+
+```javascript
+// Create a backend proxy endpoint
+// Frontend:
+const response = await fetch("/api/query", {
+  method: "POST",
+  body: JSON.stringify({ query: "Your question" }),
+});
+
+// Backend (Node.js):
+import { BrainusAI } from "@brainus/ai";
+// app.post("/api/query", async (req, res) => {
+//   const client = new BrainusAI({
+//     apiKey: process.env.BRAINUS_API_KEY, // Secure
+//   });
+
+//   const response = await client.query({
+//     query: req.body.query,
+//     storeId: "default",
+//   });
+
+//   res.json(response);
+// });
+```
+
+### 2. Use Environment Variables
+
+```bash
+# .env file (add to .gitignore!)
+BRAINUS_API_KEY=brainus_your_key_here
+```
+
+```python
+import os
+from brainus_ai import BrainusAI
+
+# Load from environment
+# async with BrainusAI(api_key=os.getenv("BRAINUS_API_KEY")) as client:
+```
+
+### 3. Validate User Input
+
+Sanitize and validate queries before sending to the API:
+
+```python
+def sanitize_query(query: str) -> str:
+    """Sanitize user input before querying."""
+
+    # Remove excessive whitespace
+    query = ' '.join(query.split())
+
+    # Limit length
+    max_length = 1000
+    if len(query) > max_length:
+        query = query[:max_length]
+
+    # Basic validation
+    if not query or len(query) < 3:
+        raise ValueError("Query too short")
+
+    return query
+
+# Usage
+# user_query = sanitize_query(request.get('query'))
+# response = await client.query(user_query, store_id="default")
+```
+
+## Monitoring and Logging
+
+### 1. Track Query Performance
+
+```python
+import logging
+import time
+
+logger = logging.getLogger(__name__)
+
+async def monitored_query(client, query: str):
+    """Query with performance monitoring."""
+
+    start_time = time.time()
+
+    try:
+        response = await client.query(query, store_id="default")
+        duration = time.time() - start_time
+
+        logger.info(
+            f"Query successful",
+            extra={
+                "query_length": len(query),
+                "citations_count": len(response.citations),
+                # "tokens_used": response.metadata.tokens_used,
+                "duration_seconds": duration
+            }
+        )
+
+        return response
+    except Exception as e:
+        duration = time.time() - start_time
+
+        logger.error(
+            f"Query failed: {str(e)}",
+            extra={
+                "query_length": len(query),
+                "duration_seconds": duration,
+                "error_type": type(e).__name__
+            }
+        )
+        raise
+```
+
+### 2. Monitor Usage Against Quotas
+
+```python
+async def check_quota_usage(client):
+    """Monitor quota usage and alert if needed."""
+
+    usage = await client.get_usage()
+
+    # Access structure depends on current SDK definition
+    # percentage = usage.quota.percentage_used
+
+    # if percentage >= 90:
+    #     send_alert("CRITICAL: 90% of quota used!")
+    # elif percentage >= 80:
+    #     send_alert("WARNING: 80% of quota used")
+```
+
+## Summary Checklist
+
+- Use specific, well-formed queries
+- Apply filters to narrow results
+- Cache frequently used queries
+- Implement retry logic with exponential backoff
+- Always display citations to users
+- Never expose API keys client-side
+- Validate and sanitize user input
+- Monitor performance and quota usage
+- Respect rate limits in batch operations
+- Handle all error types gracefully
+
+## Next Steps
+
+- **[Usage API](/docs/api-reference/usage)** - Track your API usage
+- **[Rate Limits](/docs/rate-limits)** - Understanding quotas
+- **[Code Examples](/docs/examples)** - Full application examples
+- **[Error Reference](/docs/errors)** - Complete error handling guide

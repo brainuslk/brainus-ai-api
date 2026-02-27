@@ -1,0 +1,5 @@
+{
+  "title": "Developer API",
+  "description": "Core API endpoints for querying and usage",
+  "pages": ["query", "getUsage", "getPlans"]
+}

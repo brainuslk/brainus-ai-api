@@ -1,0 +1,152 @@
+---
+title: Python SDK
+description: Official Python SDK for BrainUs API with full type hints
+---
+
+import { Callout } from "fumadocs-ui/components/callout";
+import { GithubInfo } from "fumadocs-ui/components/github-info";
+
+Official Python SDK with full type hints, async support, and automatic retry handling.
+
+<GithubInfo
+  owner="BrainUsLK"
+  repo="brainus-ai-python"
+  className="lg:-mx-2 my-4"
+/>
+
+## Installation
+
+```bash
+pip install brainus-ai
+```
+
+## Quick Start
+
+```python
+import asyncio
+import os
+from brainus_ai import BrainusAI
+
+async def main():
+    api_key = os.getenv("BRAINUS_API_KEY", "your_api_key_here")
+
+    async with BrainusAI(api_key=api_key) as client:
+        response = await client.query(
+            query="What is Python programming?",
+        )
+        print(f"Answer: {response.answer}")
+        print(f"Has citations: {response.has_citations}")
+
+if __name__ == "__main__":
+    asyncio.run(main())
+```
+
+## Configuration
+
+```python
+from brainus_ai import BrainusAI
+
+# Base configuration
+async with BrainusAI(api_key="your_key") as client:
+    pass
+```
+
+## Making Queries
+
+### Basic Query
+
+```python
+response = await client.query(
+    query="Explain Newton's laws of motion",
+)
+
+print(f"Answer: {response.answer}")
+
+if response.citations:
+    for citation in response.citations:
+        print(citation)
+```
+
+### With Filters
+
+Using `QueryFilters` or simple dict:
+
+```python
+from brainus_ai import QueryFilters
+
+# Option 1: Using QueryFilters object
+response = await client.query(
+    query="Explain data structures",
+    filters=QueryFilters(subject="ICT", grade="12"),
+)
+
+# Option 2: Using dictionary
+response = await client.query(
+    query="Explain OOP concepts",
+    filters={"subject": "ICT", "grade": "11"},
+)
+```
+
+### With Model Selection
+
+```python
+response = await client.query(
+    query="What is machine learning?",
+    model="brainusai-fast",
+)
+```
+
+### Store ID
+
+```python
+response = await client.query(
+    query="test",
+    store_id="default",  # or your custom store ID
+)
+```
+
+## Usage Statistics
+
+```python
+usage = await client.get_usage()
+
+print(f"Total requests: {usage.total_requests}")
+print(f"Total tokens: {usage.total_tokens or 'N/A'}")
+print(f"Total cost: ${usage.total_cost_usd or 0.00}")
+print(f"Quota remaining: {usage.quota_remaining or 'Unlimited'}")
+print(f"Quota percentage: {usage.quota_percentage}%")
+```
+
+## Available Plans
+
+```python
+plans = await client.get_plans()
+
+for plan in plans:
+    print(f"\n{plan.name}:")
+    print(f"  Rate limit: {plan.rate_limit_per_minute}/min")
+    print(f"  Price: LKR {plan.price_lkr or 0}")
+    print(f"  Models: {', '.join(plan.allowed_models)}")
+```
+
+## Error Handling
+
+```python
+from brainus_ai import AuthenticationError, RateLimitError
+
+try:
+    async with BrainusAI(api_key="invalid_key") as bad_client:
+        await bad_client.query(query="test")
+except AuthenticationError as e:
+    print(f"Authentication failed: {e.message}")
+except RateLimitError as e:
+    print(f"Rate limited: {e}")
+except Exception as e:
+    print(f"Error: {e}")
+```
+
+## Next Steps
+
+- [Authentication Setup](/docs/authentication/environment-setup)
+- [Code Examples](/docs/examples/python)
+- [Error Handling](/docs/errors)

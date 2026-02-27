@@ -1,0 +1,48 @@
+---
+title: API Playground
+description: Interactive API testing with live requests
+---
+
+import { Callout } from "fumadocs-ui/components/callout";
+
+Test and explore the BrainUs API endpoints with our interactive playground. Make live API requests, see responses in real-time, and experiment with different parameters.
+
+<Callout type="info">
+  **Need an API key?** Head over to [Authentication](/docs/authentication) to
+  get started with your API credentials.
+</Callout>
+
+## Available Endpoints
+
+Explore and test the following API endpoints:
+
+### Developer API
+
+Interactive testing for core BrainUs API endpoints:
+
+- **[Query](/docs/api-playground/developer-api/query)** - Search and retrieve educational content with citations
+- **[Get Usage](/docs/api-playground/developer-api/getUsage)** - Check your API usage statistics
+- **[Get Plans](/docs/api-playground/developer-api/getPlans)** - View available API plans and pricing
+
+### API Key Management
+
+Manage your API keys programmatically:
+
+- **[List Keys](/docs/api-playground/api-key-management/listKeys)** - View all your API keys
+- **[Create Key](/docs/api-playground/api-key-management/createKey)** - Generate a new API key
+- **[Get Key](/docs/api-playground/api-key-management/getKey)** - Retrieve a specific API key
+- **[Update Key](/docs/api-playground/api-key-management/updateKey)** - Modify API key settings
+- **[Regenerate Key](/docs/api-playground/api-key-management/regenerateKey)** - Regenerate an API key
+- **[Delete Key](/docs/api-playground/api-key-management/deleteKey)** - Remove an API key
+
+## Getting Started
+
+1. Select an endpoint from the sidebar
+2. Fill in the required parameters
+3. Click "Try it out" to make a live API request
+4. View the response and experiment with different inputs
+
+<Callout type="warn">
+  All requests made in the playground are live requests against the production
+  API. Make sure you're using a valid API key with appropriate permissions.
+</Callout>

@@ -1,0 +1,412 @@
+---
+title: Environment Setup
+description: Configure your development environment for BrainUs API
+---
+
+import { Callout } from "fumadocs-ui/components/callout";
+import { Tab, Tabs } from "fumadocs-ui/components/tabs";
+
+Set up your development environment to work securely with the BrainUs API across different platforms and frameworks.
+
+## Quick Setup
+
+<Tabs items={['Node.js', 'Python', 'Go']}>
+  <Tab value="Node.js">
+    ```bash
+    # Install SDK
+    npm install @brainus/ai
+
+    # Install dotenv for environment variables
+    npm install dotenv
+
+    # Create .env file
+    echo "BRAINUS_API_KEY=sk_test_your_key_here" > .env
+    echo ".env" >> .gitignore
+    ```
+
+    ```javascript
+    // index.js
+    require("dotenv").config();
+    const { BrainusAI } = require("@brainus/ai");
+
+    const client = new BrainusAI({
+      apiKey: process.env.BRAINUS_API_KEY,
+    });
+
+    async function main() {
+      const result = await client.query({
+        query: "What is photosynthesis?",
+        storeId: "default",
+      });
+      console.log(result.answer);
+    }
+
+    main();
+    ```
+
+  </Tab>
+
+  <Tab value="Python">
+    ```bash
+    # Install SDK
+    pip install brainus-ai
+
+    # Install python-dotenv
+    pip install python-dotenv
+
+    # Create .env file
+    echo "BRAINUS_API_KEY=sk_test_your_key_here" > .env
+    echo ".env" >> .gitignore
+    ```
+
+    ```python
+    # main.py
+    from dotenv import load_dotenv
+    import os
+    import asyncio
+    from brainus_ai import BrainusAI
+
+    load_dotenv()
+
+    async def main():
+        async with BrainusAI(api_key=os.getenv("BRAINUS_API_KEY")) as client:
+            result = await client.query(
+                query="What is photosynthesis?",
+                store_id="default"
+            )
+            print(result.answer)
+
+    if __name__ == "__main__":
+        asyncio.run(main())
+    ```
+
+  </Tab>
+
+  <Tab value="Go">
+    ```bash
+    # Install SDK
+    go get github.com/brainus-ai/brainus-go
+
+    # Install godotenv
+    go get github.com/joho/godotenv
+
+    # Create .env file
+    echo "BRAINUS_API_KEY=sk_test_your_key_here" > .env
+    echo ".env" >> .gitignore
+    ```
+
+    ```go
+    // main.go
+    package main
+
+    import (
+        "fmt"
+        "log"
+        "os"
+
+        "github.com/brainus-ai/brainus-go"
+        "github.com/joho/godotenv"
+    )
+
+    func main() {
+        godotenv.Load()
+
+        client := brainus.NewClient(os.Getenv("BRAINUS_API_KEY"))
+
+        result, err := client.Query(brainus.QueryRequest{
+            Query:   "What is photosynthesis?",
+            StoreID: "default",
+        })
+        if err != nil {
+            log.Fatal(err)
+        }
+
+        fmt.Println(result.Answer)
+    }
+    ```
+
+  </Tab>
+</Tabs>
+
+## Framework-Specific Setup
+
+### Next.js
+
+```bash
+# Install dependencies
+npm install @brainus/ai
+
+# Create .env.local (automatically ignored by Next.js)
+echo "BRAINUS_API_KEY=brainus_your_key_here" > .env.local
+```
+
+```typescript
+// app/api/query/route.ts
+import { BrainusAI } from "@brainus/ai";
+import { NextRequest, NextResponse } from "next/server";
+
+const client = new BrainusAI({
+  apiKey: process.env.BRAINUS_API_KEY!,
+});
+
+export async function POST(request: NextRequest) {
+  const { query } = await request.json();
+
+  const result = await client.query({
+    query,
+    storeId: "default",
+  });
+
+  return NextResponse.json(result);
+}
+```
+
+### Django
+
+```bash
+# Install dependencies
+pip install brainus-ai python-decouple
+
+# Create .env file
+echo "BRAINUS_API_KEY=brainus_your_key_here" > .env
+```
+
+```python
+# settings.py
+from decouple import config
+
+BRAINUS_API_KEY = config('BRAINUS_API_KEY')
+```
+
+```python
+# views.py
+from django.http import JsonResponse
+from brainus_ai import BrainusAI
+from django.conf import settings
+from asgiref.sync import async_to_sync
+
+# Note: Ideally use async views. For sync views, wrap the call.
+def query_view(request):
+    async def get_result():
+        async with BrainusAI(api_key=settings.BRAINUS_API_KEY) as client:
+            return await client.query(query=request.POST.get('query'), store_id='default')
+
+    result = async_to_sync(get_result)()
+    return JsonResponse({'answer': result.answer})
+```
+
+### Flask
+
+```bash
+# Install dependencies
+pip install brainus-ai python-dotenv flask
+
+# Create .env file
+echo "BRAINUS_API_KEY=brainus_your_key_here" > .env
+```
+
+```python
+# app.py
+from flask import Flask, request, jsonify
+from brainus_ai import BrainusAI
+from dotenv import load_dotenv
+import os
+import asyncio
+
+load_dotenv()
+
+app = Flask(__name__)
+
+@app.route('/query', methods=['POST'])
+async def query():
+    data = request.json
+    async with BrainusAI(api_key=os.getenv("BRAINUS_API_KEY")) as client:
+        result = await client.query(query=data['query'], store_id='default')
+    return jsonify({'answer': result.answer})
+
+if __name__ == '__main__':
+    app.run()
+```
+
+### Express.js
+
+```bash
+# Install dependencies
+npm install @brainus/ai dotenv express
+
+# Create .env file
+echo "BRAINUS_API_KEY=brainus_your_key_here" > .env
+```
+
+```javascript
+// server.js
+require("dotenv").config();
+const express = require("express");
+const { BrainusAI } = require("@brainus/ai");
+
+const app = express();
+app.use(express.json());
+
+const client = new BrainusAI({
+  apiKey: process.env.BRAINUS_API_KEY,
+});
+
+app.post("/query", async (req, res) => {
+  const { query } = req.body;
+
+  const result = await client.query({
+    query,
+    storeId: "default",
+  });
+
+  res.json({ answer: result.answer });
+});
+
+app.listen(3000, () => console.log("Server running on port 3000"));
+```
+
+## Environment Variables
+
+### Recommended Variables
+
+```bash
+# Required
+BRAINUS_API_KEY=brainus_your_key_here
+
+# Optional
+BRAINUS_API_URL=https://api.brainus.lk  # Default
+BRAINUS_TIMEOUT=30000                    # Request timeout (ms)
+BRAINUS_MAX_RETRIES=3                    # Auto-retry on failure
+```
+
+### Multiple Environments
+
+```bash
+# .env.development
+BRAINUS_API_KEY=sk_test_dev_key
+
+# .env.staging
+BRAINUS_API_KEY=sk_test_staging_key
+
+# .env.production
+BRAINUS_API_KEY=brainus_production_key
+```
+
+## Docker Setup
+
+```dockerfile
+# Dockerfile
+FROM node:18-alpine
+
+WORKDIR /app
+
+COPY package*.json ./
+RUN npm ci --only=production
+
+COPY . .
+
+CMD ["node", "index.js"]
+```
+
+```yaml
+# docker-compose.yml
+version: "3.8"
+
+services:
+  app:
+    build: .
+    environment:
+      - BRAINUS_API_KEY=${BRAINUS_API_KEY}
+    ports:
+      - "3000:3000"
+```
+
+```bash
+# Run with environment variable
+docker-compose up
+```
+
+## CI/CD Integration
+
+### GitHub Actions
+
+```yaml
+# .github/workflows/test.yml
+name: Test
+
+on: [push]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+      - run: npm ci
+      - run: npm test
+        env:
+          BRAINUS_API_KEY: ${{ secrets.BRAINUS_API_KEY }}
+```
+
+### GitLab CI
+
+```yaml
+# .gitlab-ci.yml
+test:
+  script:
+    - npm ci
+    - npm test
+  variables:
+    BRAINUS_API_KEY: $BRAINUS_API_KEY
+```
+
+<Callout type="warn">
+  Store API keys as **secrets** in your CI/CD platform, never in the config
+  files!
+</Callout>
+
+## Verification
+
+Test your setup:
+
+```bash
+# Node.js
+node -e "console.log(process.env.BRAINUS_API_KEY)"
+
+# Python
+python -c "import os; print(os.getenv('BRAINUS_API_KEY'))"
+
+# Verify API connection
+curl -X POST "https://api.brainus.lk/api/v1/query" \
+  -H "X-API-Key: $BRAINUS_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"query": "test", "store_id": "default"}'
+```
+
+## Troubleshooting
+
+### "API key not found"
+
+```bash
+# Check if variable is loaded
+echo $BRAINUS_API_KEY
+
+# Make sure .env is in the right location
+ls -la .env
+
+# Verify .env is not in the .gitignore for local dev
+# (it should be in .gitignore for version control!)
+```
+
+### "Permission denied"
+
+```bash
+# Check file permissions
+chmod 600 .env
+```
+
+## Next Steps
+
+- **[Managing API Keys](/docs/authentication/managing-keys)** - Create and manage keys
+- **[Security Best Practices](/docs/authentication/security)** - Keep your keys safe
+- **[Quick Start Guide](/docs/quick-start)** - Make your first API call

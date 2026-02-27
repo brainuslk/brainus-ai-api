@@ -1,0 +1,262 @@
+---
+title: AI & LLM Integration
+description: Make BrainUs API documentation accessible to AI agents and large language models
+---
+
+import { Callout } from "fumadocs-ui/components/callout";
+
+Enable AI agents and large language models to access and understand the BrainUs API documentation.
+
+## Overview
+
+The BrainUs Developer Portal provides dedicated endpoints for AI agents to:
+
+- **Access full documentation** in a single text file
+- **Retrieve individual pages** as Markdown/MDX
+- **Parse structured content** for better comprehension
+
+This makes it easier for AI assistants like ChatGPT, Claude, and custom AI applications to help developers integrate with BrainUs API.
+
+## Available Endpoints
+
+### Full Documentation (`/llms-full.txt`)
+
+Returns all documentation pages in a single plain text file, optimized for AI consumption.
+
+```bash
+curl https://developers.brainus.lk/llms-full.txt
+```
+
+**Use Cases:**
+
+- Training custom AI models on BrainUs documentation
+- Providing full context to AI assistants
+- Building AI-powered documentation search
+- Creating chatbots that answer BrainUs API questions
+
+### Individual Pages (`*.mdx`)
+
+Append `.mdx` to any documentation page URL to get its content as Markdown.
+
+```bash
+# Get the Quick Start guide as Markdown
+curl https://developers.brainus.lk/docs/quick-start.mdx
+
+# Get Query API reference as Markdown
+curl https://developers.brainus.lk/docs/api-reference/query.mdx
+
+# Get error documentation as Markdown
+curl https://developers.brainus.lk/docs/errors.mdx
+```
+
+**Use Cases:**
+
+- Retrieving specific documentation sections
+- Building custom documentation viewers
+- Integrating docs into AI workflows
+- Creating automated documentation tools
+
+<Callout type="info">
+  The `.mdx` extension works for any documentation page. Just append it to the
+  page URL path.
+</Callout>
+
+## Content Negotiation
+
+AI agents can use the `Accept` header to request Markdown content instead of HTML:
+
+```bash
+curl -H "Accept: text/markdown" https://developers.brainus.lk/docs/quick-start
+```
+
+When the server detects a preference for Markdown (via the `Accept` header), it automatically returns the Markdown version.
+
+## Implementation Details
+
+The AI/LLM integration uses Fumadocs's built-in features:
+
+### 1. Processed Markdown
+
+All documentation pages are pre-processed and stored with their Markdown content, enabling fast access for AI agents.
+
+### 2. Route Handlers
+
+- **`/llms-full.txt`** - Route handler that aggregates all pages
+- **`/llms.mdx/[[...slug]]`** - Route handler for individual pages
+- **Rewrites** - Automatic URL rewriting for `.mdx` extension
+
+### 3. Content Format
+
+Each page includes:
+
+- **Page title** with URL reference
+- **Full markdown content** with proper formatting
+- **Code examples** with syntax highlighting markers
+- **Structured sections** for easy parsing
+
+Example output format:
+
+```markdown
+# Quick Start (https://developers.brainus.lk/docs/quick-start)
+
+Get started with BrainUs API in under 5 minutes...
+
+## Installation
+
+\`\`\`bash
+pip install brainus-ai
+\`\`\`
+
+...
+```
+
+## Building AI Applications
+
+### Chatbot Integration
+
+Use the full documentation endpoint to train or provide context to chatbots:
+
+```python
+import requests
+
+# Fetch full documentation
+response = requests.get("https://developers.brainus.lk/llms-full.txt")
+docs_content = response.text
+
+# Provide to your AI model
+# (Example with OpenAI)
+messages = [
+    {"role": "system", "content": f"You are a helpful assistant for the BrainUs API. Use this documentation: {docs_content}"},
+    {"role": "user", "content": "How do I query the BrainUs API?"}
+]
+```
+
+### Documentation Search
+
+Build semantic search over documentation:
+
+```python
+from sentence_transformers import SentenceTransformer
+import requests
+
+# Load documentation
+docs = requests.get("https://developers.brainus.lk/llms-full.txt").text
+
+# Split into sections
+sections = docs.split('\n\n')
+
+# Create embeddings
+model = SentenceTransformer('all-MiniLM-L6-v2')
+embeddings = model.encode(sections)
+
+# Use for semantic search
+# ...
+```
+
+### Custom AI Tools
+
+Integrate with AI frameworks like LangChain:
+
+```python
+from langchain.document_loaders import TextLoader
+from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain.embeddings import OpenAIEmbeddings
+from langchain.vectorstores import FAISS
+
+# Load BrainUs documentation
+loader = TextLoader("llms-full.txt")
+documents = loader.load()
+
+# Split into chunks
+text_splitter = RecursiveCharacterTextSplitter(
+    chunk_size=1000,
+    chunk_overlap=200
+)
+chunks = text_splitter.split_documents(documents)
+
+# Create vector store
+embeddings = OpenAIEmbeddings()
+vectorstore = FAISS.from_documents(chunks, embeddings)
+
+# Use for Q&A
+# ...
+```
+
+## Best Practices
+
+### For AI Developers
+
+1. **Cache documentation** - The `/llms-full.txt` endpoint is cached and rarely changes
+2. **Use specific pages** - For focused tasks, use individual `.mdx` pages
+3. **Include context** - Always provide the full page context when using individual pages
+4. **Respect rate limits** - These endpoints are rate-limited like the rest of the site
+
+### For AI Agents
+
+1. **Parse structure** - Use the heading hierarchy to understand document structure
+2. **Follow links** - Internal links point to related documentation
+3. **Extract code examples** - Code blocks are marked with language tags
+4. **Handle citations** - API responses include citations to original sources
+
+<Callout type="tip">
+  When building AI applications, start with `/llms-full.txt` for comprehensive
+  context, then use individual `.mdx` pages for specific documentation sections.
+</Callout>
+
+## Rate Limiting
+
+AI/LLM endpoints follow the same rate limiting rules as the main site:
+
+- **Anonymous requests**: 100 requests/hour
+- **Authenticated requests**: 1,000 requests/hour (contact us for API keys)
+
+For high-volume AI applications, please contact [developers@brainus.lk](mailto:developers@brainus.lk) to discuss dedicated access.
+
+## Example Use Cases
+
+### 1. AI-Powered Support Bot
+
+Build a chatbot that answers BrainUs API questions by loading the full documentation:
+
+```typescript
+import { BrainusAI } from "@brainus/ai";
+
+// Fetch docs once on startup
+const docs = await fetch("https://developers.brainus.lk/llms-full.txt");
+const docsText = await docs.text();
+
+// Use in chatbot responses
+async function answerQuestion(question: string) {
+  const context = `Documentation:\n${docsText}\n\nQuestion: ${question}`;
+  // Send to your AI model...
+}
+```
+
+### 2. Documentation Assistant
+
+Create a CLI tool that helps developers find relevant documentation:
+
+```bash
+$ brainus-docs search "how to filter by grade"
+Found in: /docs/api-reference/query/filters
+
+Use the QueryFilters object to filter by grade:
+...
+```
+
+### 3. IDE Integration
+
+Build an IDE extension that provides inline documentation:
+
+```typescript
+// Fetch specific page when user hovers over API call
+const docUrl = "https://developers.brainus.lk/docs/api-reference/query.mdx";
+const markdown = await fetch(docUrl).then((r) => r.text());
+// Display in IDE tooltip
+```
+
+## Related Resources
+
+- **[Quick Start](/docs/quick-start)** - Get started with BrainUs API
+- **[API Reference](/docs/api-reference/query)** - Complete API documentation
+- **[Examples](/docs/examples)** - Code examples and integrations

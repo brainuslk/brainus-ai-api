@@ -1,0 +1,4 @@
+{
+  "title": "Authentication",
+  "pages": ["index", "managing-keys", "security", "environment-setup"]
+}

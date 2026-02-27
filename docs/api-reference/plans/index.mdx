@@ -1,0 +1,75 @@
+---
+title: Plans API
+description: Retrieve information about available API plans and pricing
+---
+
+import { Callout } from "fumadocs-ui/components/callout";
+
+The Plans API provides information about available subscription plans, their features, and pricing. Use this endpoint to display plan options in your application or check plan details programmatically.
+
+## Endpoint
+
+```
+GET /api/v1/dev/plans
+```
+
+**Base URL:** `https://api.brainus.lk`
+
+## Authentication
+
+**Required:** This endpoint requires authentication via API key.
+
+```
+X-API-Key: your_api_key_here
+```
+
+<Callout type="info">
+  Authentication is required to access plan information. Get your API key from
+  the [Developer Dashboard](https://developers.brainus.lk).
+</Callout>
+
+## Quick Example
+
+```bash
+curl -X GET "https://api.brainus.lk/api/v1/dev/plans" \
+  -H "X-API-Key: $BRAINUS_API_KEY"
+```
+
+## Available Plans
+
+### Free Plan
+
+- **Price:** LKR 0/month
+- **Rate Limits:** 10 requests/minute, 300 requests/day
+- **Monthly Quota:** 300 requests
+- **Allowed Models:** `brainusai-fast`
+- Perfect for testing and small projects
+
+### Starter Plan
+
+- LKR 999/month
+- 2,000 requests/month
+- Standard analytics
+
+### Pro Plan
+
+- LKR 3,499/month
+- 10,000 requests/month
+- Advanced analytics and webhooks
+
+### Enterprise Plan
+
+- LKR 14,999/month
+- 50,000 requests/month
+- Dedicated support and SLA
+
+<Callout type="tip">
+  All plans have the same features and API access - only rate limits differ.
+  Start small and scale as you grow!
+</Callout>
+
+## Next Steps
+
+- **[Plan Comparison](/docs/api-reference/plans/comparison)** - Detailed feature comparison
+- **[Upgrading](/docs/api-reference/plans/upgrading)** - How to upgrade your plan
+- **[Rate Limits](/docs/rate-limits)** - Understanding quotas

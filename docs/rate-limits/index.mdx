@@ -1,0 +1,68 @@
+---
+title: Rate Limits
+description: Understanding API rate limits, quotas, and how to handle them
+---
+
+import { Callout } from "fumadocs-ui/components/callout";
+
+The BrainUs API implements rate limiting to ensure fair usage and maintain high performance for all users.
+
+## Rate Limit Structure
+
+Every API request counts against **three separate limits**:
+
+1. **Per-minute limit** - Maximum requests per minute
+2. **Daily limit** - Maximum requests per 24-hour period
+3. **Monthly quota** - Total requests for the billing month
+
+All three limits must be satisfied for a request to succeed.
+
+## Rate Limits by Plan
+
+| Plan       | Per Minute | Per Day | Per Month |
+| ---------- | ---------- | ------- | --------- |
+| Free       | 10         | 300     | 300       |
+| Starter    | 20         | 2,000   | 2,000     |
+| Pro        | 60         | 10,000  | 10,000    |
+| Enterprise | 200        | 50,000  | 50,000    |
+
+<Callout type="info">
+  Check your current rate limit status in the
+  [Dashboard](https://developers.brainus.lk/dashboard).
+</Callout>
+
+## Response Headers
+
+Every API response includes rate limit information in the headers:
+
+```
+X-RateLimit-Limit: 60
+X-RateLimit-Remaining: 55
+X-RateLimit-Reset: 1640995200
+```
+
+| Header                  | Description                            |
+| ----------------------- | -------------------------------------- |
+| `X-RateLimit-Limit`     | Maximum requests allowed in the window |
+| `X-RateLimit-Remaining` | Requests remaining in current window   |
+| `X-RateLimit-Reset`     | Unix timestamp when limit resets       |
+
+## Rate Limit Errors
+
+When you exceed a rate limit, you'll receive a `429 Too Many Requests` response:
+
+```json
+{
+  "error": {
+    "code": "rate_limit_exceeded",
+    "message": "Rate limit exceeded",
+    "retry_after": 30
+  }
+}
+```
+
+## Next Steps
+
+- **[Understanding Limits](/docs/rate-limits/understanding)** - Deep dive into how limits work
+- **[Handling Rate Limits](/docs/rate-limits/handling)** - Implementation strategies
+- **[Optimization](/docs/rate-limits/optimization)** - Reduce API calls

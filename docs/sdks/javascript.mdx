@@ -1,0 +1,269 @@
+---
+title: JavaScript/TypeScript SDK
+description: Official Node.js SDK with full TypeScript support
+---
+
+import { Callout } from "fumadocs-ui/components/callout";
+import { GithubInfo } from "fumadocs-ui/components/github-info";
+
+Official JavaScript/TypeScript SDK with full type definitions and async/await support.
+
+<GithubInfo owner="brainuslk" repo="brainus-ai-js" className="lg:-mx-2 my-4" />
+
+## Installation
+
+```bash
+npm install @brainus/ai
+```
+
+Or using yarn:
+
+```bash
+yarn add @brainus/ai
+```
+
+Or using pnpm:
+
+```bash
+pnpm add @brainus/ai
+```
+
+## Quick Start
+
+```javascript
+const { BrainusAI } = require("@brainus/ai");
+// For TypeScript: import { BrainusAI } from "@brainus/ai";
+
+const client = new BrainusAI({
+  apiKey: process.env.BRAINUS_API_KEY || "your_api_key_here",
+});
+
+async function main() {
+  const response = await client.query({
+    query: "What is Python programming?",
+  });
+
+  console.log(response.answer);
+  console.log(`Has citations: ${response.hasCitations}`);
+}
+
+main();
+```
+
+## Configuration
+
+```typescript
+import { BrainusAI } from "@brainus/ai";
+
+const client = new BrainusAI({
+  apiKey: "your_api_key_here",
+  // Optional: override base URL if needed
+  // baseUrl: "https://api.brainus.lk"
+});
+```
+
+## Making Queries
+
+### Basic Query
+
+```typescript
+import { BrainusAI } from "@brainus/ai";
+const client = new BrainusAI({ apiKey: "brainus_..." });
+
+const result = await client.query({
+  query: "What is ICT?",
+  storeId: "default",
+});
+
+// 1. The 'answer' is a Markdown formatted string
+console.log(result.answer);
+
+// 2. Accessing citations properly
+if (result.hasCitations) {
+  result.citations.forEach((citation) => {
+    // Correct properties:
+    console.log(`Source: ${citation.documentName}`);
+
+    // 'pages' is an array of numbers
+    if (citation.pages.length > 0) {
+      console.log(`Pages: ${citation.pages.join(", ")}`);
+    }
+    // 'chunkText' contains the specific snippet used
+    if (citation.chunkText) {
+      console.log(`Snippet: ${citation.chunkText.substring(0, 100)}...`);
+    }
+  });
+}
+```
+
+### Response Format
+
+The `answer` field is returned as a **Markdown formatted string**. You should render it using a Markdown parser (like `react-markdown` in React applications) to ensure proper formatting of headers, lists, and bold text.
+
+### Citation Properties
+
+The SDK automatically maps backend response fields to camelCase:
+
+- `documentName`: Name of the source document
+- `pages`: Array of page numbers (e.g., `[45, 46]`)
+- `chunkText`: Specific snippet of text used for the answer
+- `documentId`: Unique identifier for the document
+
+### With Filters
+
+```typescript
+const response = await client.query({
+  query: "Explain data structures",
+  filters: {
+    subject: "ICT",
+    grade: "12",
+  },
+});
+```
+
+### With Model Selection
+
+```typescript
+const response = await client.query({
+  query: "What is machine learning?",
+  model: "brainusai-fast",
+});
+```
+
+### Store ID
+
+```typescript
+const response = await client.query({
+  query: "test",
+  storeId: "default", // or your custom store ID
+});
+```
+
+## TypeScript Support
+
+Full type definitions included:
+
+```typescript
+import { BrainusAI } from "@brainus/ai";
+
+const client = new BrainusAI({ apiKey: process.env.BRAINUS_API_KEY! });
+
+async function processQuery(question: string) {
+  const result = await client.query({
+    query: question,
+  });
+
+  return result.answer;
+}
+```
+
+## Error Handling
+
+```typescript
+try {
+  const badClient = new BrainusAI({ apiKey: "invalid_key" });
+  await badClient.query({ query: "test" });
+} catch (error) {
+  console.log(`Error type: ${error.constructor.name}`);
+  console.log(`Error message: ${error.message}`);
+}
+```
+
+## Usage Statistics
+
+```typescript
+const usage = await client.getUsage();
+
+console.log(`Total requests: ${usage.totalRequests}`);
+console.log(`Total tokens: ${usage.totalTokens || "N/A"}`);
+console.log(`Total cost: $${usage.totalCostUsd || "0.00"}`);
+console.log(`Quota remaining: ${usage.quotaRemaining || "Unlimited"}`);
+console.log(`Quota percentage: ${usage.quotaPercentage}%`);
+```
+
+## Available Plans
+
+```typescript
+const plans = await client.getPlans();
+
+plans.forEach((plan) => {
+  console.log(`\n${plan.name}:`);
+  console.log(`  Rate limit: ${plan.rateLimitPerMinute}/min`);
+  console.log(`  Price: LKR ${plan.priceLkr || 0}`);
+  console.log(`  Models: ${plan.allowedModels.join(", ")}`);
+});
+```
+
+## React Integration
+
+### Custom Hook
+
+```typescript
+import { useState, useCallback } from "react";
+import { BrainusAI } from "@brainus/ai";
+
+// Initialize properly, preferably via a backend proxy to keep key safe
+// or use environment variable if appropriate for your use case
+
+export function useBrainUs() {
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [data, setData] = useState<any | null>(null);
+
+  const query = useCallback(async (question: string) => {
+    setLoading(true);
+    setError(null);
+    try {
+      // Example calling your own API route
+      const response = await fetch("/api/query", {
+        method: "POST",
+        body: JSON.stringify({ query: question }),
+      });
+      const result = await response.json();
+      setData(result);
+      return result;
+    } catch (err: any) {
+      setError(err.message);
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  return { query, loading, error, data };
+}
+```
+
+## Next.js Integration
+
+### API Route (App Router)
+
+```typescript
+// app/api/query/route.ts
+import { BrainusAI } from "@brainus/ai";
+import { NextRequest, NextResponse } from "next/server";
+
+const client = new BrainusAI({
+  apiKey: process.env.BRAINUS_API_KEY!,
+});
+
+export async function POST(request: NextRequest) {
+  try {
+    const { query } = await request.json();
+
+    const result = await client.query({
+      query,
+    });
+
+    return NextResponse.json(result);
+  } catch (error: any) {
+    return NextResponse.json({ error: error.message }, { status: 500 });
+  }
+}
+```
+
+## Next Steps
+
+- [Authentication Setup](/docs/authentication/environment-setup)
+- [Code Examples](/docs/examples/javascript)
+- [Error Handling](/docs/errors)

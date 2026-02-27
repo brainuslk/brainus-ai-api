@@ -1,0 +1,345 @@
+---
+title: Quick Start
+description: Get started with BrainUs AI in minutes
+icon: Album
+---
+
+import { Callout } from "fumadocs-ui/components/callout";
+import { Tab, Tabs } from "fumadocs-ui/components/tabs";
+import { Step, Steps } from "fumadocs-ui/components/steps";
+import { Cards, Card } from "fumadocs-ui/components/card";
+import { Accordion, Accordions } from "fumadocs-ui/components/accordion";
+import { Search, Activity, CreditCard, Code } from "lucide-react";
+
+## Introduction
+
+BrainUs AI is a **RAG-powered educational API** designed to provide accurate, curriculum-aligned content with verifiable citations. Built for developers creating educational applications, it offers seamless integration with comprehensive documentation coverage.
+
+BrainUsAI API has different parts:
+
+<Cards>
+  <Card
+    icon={<Search className="text-blue-400" />}
+    title="Query API"
+    href="/docs/api-reference/query"
+  >
+    The core endpoint for retrieving educational content from our knowledge base
+    with AI-powered search and verified citations.
+  </Card>
+  <Card
+    icon={<Activity className="text-green-400" />}
+    title="Usage API"
+    href="/docs/api-reference/usage"
+  >
+    Track your API usage, monitor quotas, and analyze performance metrics in
+    real-time.
+  </Card>
+  <Card
+    icon={<CreditCard className="text-purple-400" />}
+    title="Plans API"
+    href="/docs/api-reference/plans"
+  >
+    Retrieve information about available plans, pricing, and upgrade options
+    programmatically.
+  </Card>
+  <Card
+    icon={<Code className="text-orange-400" />}
+    title="SDKs & Libraries"
+    href="/docs/sdks"
+  >
+    Official Python and JavaScript SDKs with full TypeScript support, automatic
+    retry handling, and rate limit management.
+  </Card>
+</Cards>
+
+<Callout title="Want to learn more?">
+  Read our in-depth [What is BrainUs AI](/docs/quick-start) introduction.
+</Callout>
+
+### Terminology
+
+- **RAG (Retrieval-Augmented Generation):** An AI approach that combines document retrieval with language generation to provide accurate, citation-backed answers.
+
+- **Store:** A collection of indexed documents. Use `"default"` for general Sri Lankan curriculum queries.
+
+- **Citation:** Source references with document name and page number that verify the accuracy of API responses.
+
+Some basic knowledge of REST APIs and either Python or JavaScript would be useful.
+
+## Create Your Account
+
+<Steps>
+  <Step>
+    ### Sign Up
+    
+    Visit [developers.brainus.lk](https://developers.brainus.lk) and create your free account. No credit card required.
+  </Step>
+
+  <Step>
+    ### Subscribe to a Plan
+    
+    Go to [Upgrade](https://developers.brainus.lk/upgrade) and subscribe to a Free or paid plan. The Free plan requires no credit card! You must have an active subscription before creating API keys.
+  </Step>
+
+{" "}
+
+<Step>
+  ### Generate API Key Navigate to Dashboard → API Keys and click "Create API
+  Key". Copy it immediately - you won't see it again! The API key will match your current plan.
+</Step>
+
+  <Step>
+    ### Make Your First Request
+    
+    Test your API key with a simple curl command:
+
+    ```bash
+    curl -X POST "https://api.brainus.lk/api/v1/query" \
+      -H "X-API-Key: $BRAINUS_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "query": "What is photosynthesis?",
+        "store_id": "default"
+      }'
+    ```
+
+    Or try it instantly in our [API Playground](/docs/api-playground) without writing any code!
+
+  </Step>
+
+  <Step>
+    ### Install SDK (Optional)
+    
+    For Python or JavaScript projects, install our official SDK:
+
+    ```bash
+    # Python
+    pip install brainus-ai
+
+    # JavaScript/TypeScript
+    npm install @brainus/ai
+    ```
+
+  </Step>
+</Steps>
+
+## Your First Query
+
+### Using Python
+
+```python
+import asyncio
+import os
+from brainus_ai import BrainusAI
+
+async def main():
+    # Ensure BRAINUS_API_KEY is set in your environment
+    api_key = os.getenv("BRAINUS_API_KEY")
+
+    async with BrainusAI(api_key=api_key) as client:
+        result = await client.query(
+            query="What is photosynthesis?",
+            store_id="default"
+        )
+        print(result.answer)
+
+        # Access citations
+        if result.citations:
+            for citation in result.citations:
+                print(f"Source: {citation.document_name}")
+                if citation.pages:
+                    print(f"Pages: {', '.join(map(str, citation.pages))}")
+
+if __name__ == "__main__":
+    asyncio.run(main())
+```
+
+### Using JavaScript
+
+```javascript
+/* Use ESM or TypeScript */
+import { BrainusAI } from "@brainus/ai";
+
+/* Or CommonJS */
+/* const { BrainusAI } = require("@brainus/ai"); */
+
+// Ensure BRAINUS_API_KEY is set in your environment
+const client = new BrainusAI({
+  apiKey: process.env.BRAINUS_API_KEY,
+});
+
+async function main() {
+  const result = await client.query({
+    query: "What is photosynthesis?",
+    storeId: "default",
+  });
+
+  console.log(result.answer);
+
+  // Access citations
+  if (result.citations && result.citations.length > 0) {
+    result.citations.forEach((citation) => {
+      console.log(`Source: ${citation.documentName}`);
+      if (citation.pages.length > 0) {
+        console.log(`Pages: ${citation.pages.join(", ")}`);
+      }
+    });
+  }
+}
+
+main();
+```
+
+### Using cURL
+
+```bash
+curl -X POST "https://api.brainus.lk/api/v1/query" \
+  -H "X-API-Key: $BRAINUS_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "query": "What is photosynthesis?",
+    "store_id": "default"
+  }'
+```
+
+<Callout type="tip">
+  **Want to test without code?** Try our interactive [API
+  Playground](/docs/api-playground) to explore the API instantly!
+</Callout>
+
+<Callout type="info">
+  The free plan includes 300 requests per month. Perfect for testing and small
+  projects!
+</Callout>
+
+## FAQ
+
+Some common questions you may encounter.
+
+<Accordions>
+  <Accordion id="secure-api-key" title="How do I secure my API key?">
+    Never expose your API key in client-side code. Always use environment variables and proxy requests through your backend:
+
+    ```bash
+    # .env
+    BRAINUS_API_KEY=brainus_your_key_here
+    ```
+
+    ```python
+    import os
+    from brainus_ai import BrainusAI
+
+    async with BrainusAI(api_key=os.getenv("BRAINUS_API_KEY")) as client:
+        pass
+    ```
+
+    See our [Security Best Practices](/docs/authentication) guide.
+
+  </Accordion>
+
+  <Accordion id="rate-limits" title="What happens when I hit rate limits?">
+    The API returns a `429` status code with a `retry_after` header indicating how long to wait. Our SDKs handle this automatically with exponential backoff.
+
+    Learn more in [Rate Limits](/docs/rate-limits).
+
+  </Accordion>
+
+  <Accordion id="filters" title="Can I use filters to narrow results?">
+    Yes! Use filters to target specific grades, subjects, or content types:
+
+    ```python
+    result = await client.query(
+        query="Mathematics concepts",
+        store_id="default",
+        filters={
+            "grade": ["9", "10"],
+            "subject": ["Mathematics"]
+        }
+    )
+    ```
+
+    See [API Reference](/docs/api-reference/query) for more options.
+
+  </Accordion>
+</Accordions>
+
+## Learn More
+
+New here? We welcome your questions and feedback!
+
+If you find anything confusing, please reach out on [GitHub](https://github.com/BrainUsLK) or email us at [developers@brainus.lk](mailto:developers@brainus.lk).
+
+### Core Documentation
+
+<Cards>
+  <Card
+    href="/docs/quick-start"
+    title="What is BrainUs AI"
+    description="Complete overview of BrainUs AI features and capabilities"
+  />
+  <Card
+    href="/docs/authentication"
+    title="Authentication"
+    description="Learn how to securely manage API keys"
+  />
+  <Card
+    href="/docs/api-reference/query"
+    title="Query API"
+    description="Complete API reference with request/response schemas"
+  />
+  <Card
+    href="/docs/examples"
+    title="Code Examples"
+    description="Production-ready examples in Python and JavaScript"
+  />
+</Cards>
+
+### SDKs & Integration
+
+<Cards>
+  <Card
+    href="/docs/sdks/python"
+    title="Python SDK"
+    description="Full-featured SDK with type hints and async support"
+  />
+  <Card
+    href="/docs/sdks/javascript"
+    title="JavaScript/TypeScript SDK"
+    description="Node.js SDK with complete TypeScript definitions"
+  />
+  <Card
+    href="/docs/examples/python"
+    title="Python Examples"
+    description="Django, Flask, FastAPI integration examples"
+  />
+  <Card
+    href="/docs/examples/javascript"
+    title="JavaScript Examples"
+    description="Next.js, React, Express integration examples"
+  />
+</Cards>
+
+### Advanced Topics
+
+<Cards>
+  <Card
+    href="/docs/rate-limits"
+    title="Rate Limits"
+    description="Understanding quotas and handling rate limits"
+  />
+  <Card
+    href="/docs/errors"
+    title="Error Reference"
+    description="Complete error codes and troubleshooting guide"
+  />
+  <Card
+    href="/docs/api-reference/usage"
+    title="Usage Tracking"
+    description="Monitor API usage and analyze performance"
+  />
+  <Card
+    href="/docs/api-reference/plans"
+    title="Plans & Pricing"
+    description="Compare plans and upgrade options"
+  />
+</Cards>

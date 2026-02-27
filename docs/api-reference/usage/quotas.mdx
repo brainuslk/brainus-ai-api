@@ -1,0 +1,116 @@
+---
+title: Quota Management
+description: Monitor and manage your API quotas effectively
+---
+
+import { Callout } from "fumadocs-ui/components/callout";
+
+Monitor your API quotas and understand your plan's limits to optimize usage and avoid service interruptions.
+
+## Understanding Quotas
+
+Your API plan includes multiple rate limits that work together:
+
+| Limit Type           | Description                          | Reset Schedule          |
+| -------------------- | ------------------------------------ | ----------------------- |
+| **Per-minute limit** | Maximum requests per minute          | Every 60 seconds        |
+| **Daily limit**      | Maximum requests per 24-hour period  | Midnight UTC each day   |
+| **Monthly quota**    | Total requests for the billing month | 1st of month, 00:00 UTC |
+
+All limits must be satisfied for a request to succeed.
+
+## Plan Limits
+
+| Plan       | Per Minute | Per Day   | Monthly Quota |
+| ---------- | ---------- | --------- | ------------- |
+| Free       | 10         | 300       | 300           |
+| Starter    | 20         | 10,000    | 10,000        |
+| Pro        | 60         | 50,000    | 50,000        |
+| Enterprise | 200        | 1,000,000 | 1,000,000     |
+
+## Check Quota Status
+
+Get your current quota usage programmatically:
+
+### Python
+
+```python
+from brainus_ai import BrainusAI
+
+async def check_quota():
+    client = BrainusAI(api_key="your_api_key_here")
+    usage = await client.get_usage()
+
+    print(f"Plan: {usage.plan.name}")
+    print(f"Quota used: {usage.quota_percentage:.1f}%")
+    print(f"Remaining: {usage.quota_remaining:,} requests")
+```
+
+### JavaScript
+
+```javascript
+import { BrainusAI } from "@brainus/ai";
+
+const client = new BrainusAI({ apiKey: "your_api_key_here" });
+const usage = await client.getUsage();
+
+console.log(`Plan: ${usage.plan.name}`);
+console.log(`Quota used: ${usage.quotaPercentage.toFixed(1)}%`);
+console.log(`Remaining: ${usage.quotaRemaining.toLocaleString()} requests`);
+```
+
+## Monitor Usage in Dashboard
+
+For visual monitoring and detailed analytics, visit the **[Developer Dashboard](https://developers.brainus.lk/dashboard/usage)** where you can:
+
+- View real-time quota usage with visual charts
+- Track historical usage trends
+- Set up quota alerts and notifications
+- Analyze usage by endpoint and time period
+- Monitor cost and token consumption
+- Export usage data for reporting
+
+<Callout type="info">
+  The Developer Dashboard provides comprehensive usage analytics and monitoring
+  tools. Log in at [developers.brainus.lk](https://developers.brainus.lk) to
+  access your usage dashboard.
+</Callout>
+
+## Quota Warnings
+
+Watch for these response headers to monitor quota status:
+
+```
+X-RateLimit-Remaining: 45
+X-RateLimit-Limit: 60
+X-RateLimit-Reset: 1640000000
+```
+
+When you approach or exceed limits, you'll receive appropriate error responses:
+
+- **429 Too Many Requests** - Rate limit exceeded
+- **403 Forbidden** - Monthly quota exceeded
+
+## Best Practices
+
+1. **Monitor regularly** - Check quota status in the dashboard daily
+2. **Set up alerts** - Configure notifications at 80% and 90% usage
+3. **Plan ahead** - Upgrade before reaching limits during high-traffic periods
+4. **Optimize usage** - Use caching and batch requests when possible
+5. **Track trends** - Review historical data to predict future needs
+
+## Upgrade Your Plan
+
+If you're approaching your quota limits, consider upgrading your plan:
+
+- **Starter** - For growing projects (10K/month)
+- **Pro** - For production applications (50K/month)
+- **Enterprise** - For large-scale deployments (1M/month)
+
+Contact our [sales team](mailto:sales@brainus.lk) to discuss custom quotas for enterprise needs.
+
+## Related Resources
+
+- **[Usage API](/docs/api-reference/usage)** - Complete API reference
+- **[Rate Limits](/docs/rate-limits)** - Understanding rate limiting
+- **[Developer Dashboard](https://developers.brainus.lk)** - Visual monitoring and analytics

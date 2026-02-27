@@ -1,0 +1,245 @@
+---
+title: What is BrainUs AI
+description: Welcome to BrainUs AI - Educational content API with built-in citations for Sri Lankan curriculum
+icon: CircleQuestionMark
+---
+
+import { Callout } from "fumadocs-ui/components/callout";
+import { Tab, Tabs } from "fumadocs-ui/components/tabs";
+import { Step, Steps } from "fumadocs-ui/components/steps";
+import { Cards, Card } from "fumadocs-ui/components/card";
+import { Accordion, Accordions } from "fumadocs-ui/components/accordion";
+
+BrainUs AI is a **documentation-powered educational API** built for developers who need accurate, curriculum-aligned content with verifiable citations.
+
+## Philosophy
+
+<Accordions>
+  <Accordion id="citation-first" title="Citation-First Approach">
+    While most AI APIs provide answers without sources, BrainUs AI ensures every response includes verifiable citations from official Sri Lankan curriculum documents. This builds trust and enables developers to create educational applications that students and teachers can rely on.
+  </Accordion>
+
+{" "}
+<Accordion id="developer-experience" title="Developer Experience">
+  We focus on making integration seamless with comprehensive SDKs, detailed
+  documentation, and production-ready examples. Whether you're building with
+  Python or JavaScript, our tools help you ship faster.
+</Accordion>
+
+{" "}
+<Accordion id="curriculum-coverage" title="Curriculum Coverage">
+  With 1,000+ indexed documents covering Grade 6-13 across all subjects, BrainUs
+  AI provides comprehensive coverage of the Sri Lankan educational curriculum.
+  Our RAG system ensures answers are accurate and contextually relevant.
+</Accordion>
+
+  <Accordion id="production-ready" title="Production Ready">
+    99.9% uptime SLA with sub-500ms p95 latency. Our infrastructure is battle-tested and scales with your application's needs.
+  </Accordion>
+</Accordions>
+
+## Create Your Account
+
+<Steps>
+  <Step>
+    ### Sign Up
+    
+    Visit [developers.brainus.lk/signup](https://developers.brainus.lk/signup) and create your free account. No credit card required.
+  </Step>
+
+  <Step>
+    ### Subscribe to a Plan
+    
+    Go to [Upgrade](https://developers.brainus.lk/upgrade) and subscribe to a Free or paid plan. The Free plan requires no credit card! You must have an active subscription before creating API keys.
+  </Step>
+
+{" "}
+
+<Step>
+  ### Generate API Key Navigate to Dashboard → API Keys and click "Create API
+  Key". Copy it immediately - you won't see it again! The API key will match your current plan.
+</Step>
+
+  <Step>
+    ### Make Your First Request
+    
+    Test your API key with a simple curl command:
+
+    ```bash
+    curl -X POST "https://api.brainus.lk/api/v1/query" \
+      -H "X-API-Key: $BRAINUS_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "query": "What is photosynthesis?",
+        "store_id": "default"
+      }'
+    ```
+
+    Prefer a visual interface? Check out the [API Playground](/docs/api-playground) to test queries interactively.
+
+  </Step>
+
+  <Step>
+    ### Install SDK (Optional)
+    
+    For Python or JavaScript projects, install our official SDK:
+
+    ```bash
+    # Python
+    pip install brainus-ai
+
+    # JavaScript/TypeScript
+    npm install @brainus/ai
+    ```
+
+  </Step>
+</Steps>
+
+## When to use BrainUs AI
+
+BrainUs AI is designed for educational applications that need reliable, curriculum-aligned content.
+
+<Accordions>
+  <Accordion id="educational-apps" title="Educational Apps">
+    Build tutoring apps, homework helpers, or study guides that provide accurate answers with proper citations. Perfect for students who need trustworthy information.
+  </Accordion>
+
+{" "}
+<Accordion id="learning-management" title="Learning Management Systems">
+  Integrate curriculum-aligned content into your LMS, providing students with
+  AI-powered assistance that references official educational materials.
+</Accordion>
+
+{" "}
+<Accordion id="chatbots" title="Chatbots & Virtual Assistants">
+  Create educational chatbots for schools or learning platforms. Our API ensures
+  responses are accurate and properly sourced from curriculum documents.
+</Accordion>
+
+  <Accordion id="content-platforms" title="Content Platforms">
+    Build platforms that curate or generate educational content. Use our API to ensure accuracy and provide proper attribution to source materials.
+  </Accordion>
+</Accordions>
+
+## Quick Example
+
+Here's how simple it is to query BrainUs API:
+
+<Tabs items={['Python', 'JavaScript', 'cURL']}>
+  <Tab value="Python">
+    ```python
+    from brainus_ai import BrainusAI
+
+    async with BrainusAI(api_key="your-api-key") as client:
+        result = await client.query(
+            query="Explain photosynthesis",
+            store_id="default"
+        )
+        print(result.answer)
+        print(result.citations)
+    ```
+
+  </Tab>
+  <Tab value="JavaScript">
+    ```javascript
+    import { BrainusAI } from '@brainus/ai';
+
+    const client = new BrainusAI({ apiKey: 'your-api-key' });
+    const result = await client.query({
+      query: 'Explain photosynthesis',
+      storeId: 'default'
+    });
+    console.log(result.answer);
+    console.log(result.citations);
+    ```
+
+  </Tab>
+  <Tab value="cURL">
+    ```bash
+    curl -X POST "https://api.brainus.lk/api/v1/query" \
+      -H "X-API-Key: your-api-key" \
+      -H "Content-Type: application/json" \
+      -d '{"query": "Explain photosynthesis", "store_id": "default"}'
+    ```
+  </Tab>
+</Tabs>
+
+<Callout type="tip">
+  **Want to test the API instantly?** Try our [API
+  Playground](/docs/api-playground) - no code required!
+</Callout>
+
+<Callout type="info">
+  Ready to start building? Check out our [Quick Start](/docs) guide to make your
+  first API call in under 5 minutes.
+</Callout>
+
+## API Plans
+
+Choose the plan that fits your needs:
+
+| Feature                    | Free      | Starter  | Pro            | Enterprise      |
+| -------------------------- | --------- | -------- | -------------- | --------------- |
+| **Price**                  | LKR 0     | LKR 999  | LKR 3,499      | LKR 14,999      |
+| **Requests/month**         | 300       | 2,000    | 10,000         | 50,000          |
+| **Requests/minute**        | 10        | 20       | 60             | 200             |
+| **Custom Knowledge Bases** | ❌        | ❌       | ❌             | ✅              |
+| **Analytics**              | Basic     | Standard | Advanced       | Custom          |
+| **Support**                | Community | Email    | Priority Email | Dedicated + SLA |
+| **Webhooks**               | ❌        | ❌       | ✅             | ✅              |
+
+<Callout type="tip">
+  All plans include the same features - only rate limits differ. Start with Free
+  and upgrade as you grow!
+</Callout>
+
+## Popular Resources
+
+<Cards>
+  <Card
+    href="/docs"
+    title="Quick Start"
+    description="Make your first API call in under 5 minutes"
+  />
+  <Card
+    href="/docs/authentication"
+    title="Authentication"
+    description="Learn how to securely manage API keys"
+  />
+  <Card
+    href="/docs/api-reference/query"
+    title="API Reference"
+    description="Complete endpoint documentation"
+  />
+  <Card
+    href="/docs/examples"
+    title="Code Examples"
+    description="Full examples in Python and JavaScript"
+  />
+  <Card
+    href="/docs/sdks"
+    title="SDKs"
+    description="Official Python and JavaScript SDKs"
+  />
+  <Card
+    href="/docs/comparisons"
+    title="Comparisons"
+    description="How BrainUs AI compares to alternatives"
+  />
+</Cards>
+
+## Need Help?
+
+New here? We welcome your questions and feedback!
+
+- Browse our [comprehensive documentation](/docs)
+- Join our [Discord community](https://discord.gg/3Y7KsR7qcW)
+- Email us at [developers@brainus.lk](mailto:developers@brainus.lk)
+- Report issues on [GitHub](https://github.com/BrainUsLK)
+
+If you find anything confusing, please give your feedback!
+
+<Callout type="tip">
+  Join our [Discord community](https://discord.gg/3Y7KsR7qcW) for real-time help
+  and discussions with other developers!
+</Callout>

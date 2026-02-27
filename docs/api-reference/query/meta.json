@@ -1,0 +1,4 @@
+{
+  "title": "Query API",
+  "pages": ["index", "basic-usage", "filters", "model-selection", "best-practices"]
+}

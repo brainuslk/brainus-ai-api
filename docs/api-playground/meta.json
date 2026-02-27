@@ -1,0 +1,7 @@
+{
+  "title": "API Playground",
+  "description": "Interactive API testing with live requests",
+  "root": true,
+  "defaultOpen": true,
+  "pages": ["index", "developer-api", "api-key-management"]
+}
