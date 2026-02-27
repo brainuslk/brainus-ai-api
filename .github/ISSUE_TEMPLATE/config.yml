@@ -3,15 +3,6 @@ contact_links:
   - name: Documentation
     url: https://developers.brainus.lk/docs
     about: Full API documentation, guides, and SDK references
-  - name: Quick Start Guide
-    url: https://developers.brainus.lk/docs/quick-start
-    about: Get up and running in minutes
-  - name: Developer Portal
-    url: https://developers.brainus.lk
-    about: Manage your API keys, usage, and subscription
-  - name: Discord Community
-    url: https://discord.gg/3Y7KsR7qcW
-    about: Join our Discord — select Developer during onboarding for API channels
   - name: Email Support
     url: mailto:developers@brainus.lk
     about: Direct support for account and billing questions
