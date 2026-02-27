@@ -1,6 +1,6 @@
 name: API Behavior Issue
 description: Report unexpected answers, wrong citations, or incorrect model behavior
-labels: ["model-behavior"]
+labels: ["api-behavior"]
 body:
   - type: markdown
     attributes:
