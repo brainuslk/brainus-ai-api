@@ -1,0 +1,54 @@
+name: Documentation Issue
+description: Report missing, incorrect, or unclear documentation
+labels: ["documentation"]
+body:
+  - type: dropdown
+    id: type
+    attributes:
+      label: Type of issue
+      options:
+        - Missing documentation
+        - Incorrect or outdated content
+        - Unclear or confusing explanation
+        - Missing code example
+        - Broken link
+        - Typo or formatting
+        - Other
+    validations:
+      required: true
+
+  - type: input
+    id: page
+    attributes:
+      label: Documentation page
+      description: URL or path to the affected page.
+      placeholder: https://developers.brainus.lk/docs/authentication or docs/authentication/index.mdx
+    validations:
+      required: true
+
+  - type: textarea
+    id: current
+    attributes:
+      label: Current content
+      description: Quote the part that is wrong, missing, or confusing.
+    validations:
+      required: true
+
+  - type: textarea
+    id: suggestion
+    attributes:
+      label: Suggested improvement
+      description: What should it say instead, or what is missing?
+    validations:
+      required: true
+
+  - type: dropdown
+    id: impact
+    attributes:
+      label: Impact
+      options:
+        - High — prevents me from using a feature
+        - Medium — makes a feature difficult to use
+        - Low — minor confusion or polish
+    validations:
+      required: true

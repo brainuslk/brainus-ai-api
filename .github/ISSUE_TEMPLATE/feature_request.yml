@@ -1,0 +1,79 @@
+name: Feature Request
+description: Suggest a new feature or improvement for BrainUs AI API
+labels: ["enhancement"]
+body:
+  - type: checkboxes
+    id: preflight
+    attributes:
+      label: Before you submit
+      options:
+        - label: I searched existing issues and this has not been requested before
+          required: true
+        - label: I have checked the [roadmap](https://developers.brainus.lk/docs) and this is not already planned
+          required: true
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem statement
+      description: What problem are you trying to solve? What's frustrating or missing?
+      placeholder: I'm building a tutoring app and I can't filter queries by topic within a subject...
+    validations:
+      required: true
+
+  - type: textarea
+    id: solution
+    attributes:
+      label: Proposed solution
+      description: Describe what you'd like to see. Include API shape or SDK usage if relevant.
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+      description: Any workarounds you've tried or other approaches you considered.
+
+  - type: dropdown
+    id: category
+    attributes:
+      label: Category
+      options:
+        - Query API
+        - Filters
+        - Models
+        - Authentication / API keys
+        - Rate limits / Quotas
+        - Python SDK
+        - JavaScript SDK
+        - Documentation
+        - Other
+    validations:
+      required: true
+
+  - type: dropdown
+    id: priority
+    attributes:
+      label: Priority
+      description: How much does this impact your work?
+      options:
+        - Critical — blocking my project
+        - High — significantly impacts my workflow
+        - Medium — nice to have
+        - Low — minor improvement
+    validations:
+      required: true
+
+  - type: textarea
+    id: use_case
+    attributes:
+      label: Use case
+      description: Briefly describe what you're building so we can understand the context.
+      placeholder: I'm building a study app for A/L students in Sri Lanka...
+
+  - type: textarea
+    id: context
+    attributes:
+      label: Additional context
+      description: Mockups, examples from other APIs, or anything else useful.

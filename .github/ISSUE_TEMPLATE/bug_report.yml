@@ -1,0 +1,93 @@
+name: Bug Report
+description: Report a bug in the BrainUs AI API or SDKs
+labels: ["bug"]
+body:
+  - type: checkboxes
+    id: preflight
+    attributes:
+      label: Before you submit
+      options:
+        - label: I searched existing issues and this is not a duplicate
+          required: true
+        - label: I am using a valid API key with an active subscription
+          required: true
+        - label: I have checked the [documentation](https://developers.brainus.lk/docs) and [error reference](https://developers.brainus.lk/docs/errors)
+          required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: What happened?
+      description: A clear description of the bug.
+      placeholder: When I call the query endpoint with filters, I get a 500 error instead of a response.
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+      description: What did you expect to happen?
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Steps to reproduce
+      description: Minimal code or request to reproduce the issue. Remove your API key before pasting.
+      render: shell
+    validations:
+      required: true
+
+  - type: textarea
+    id: response
+    attributes:
+      label: Error message or response
+      description: Paste the full error message or API response (remove any sensitive data).
+      render: json
+
+  - type: dropdown
+    id: sdk
+    attributes:
+      label: How are you calling the API?
+      options:
+        - Python SDK (brainus-ai)
+        - JavaScript/TypeScript SDK (@brainus/ai)
+        - cURL / HTTP directly
+        - Other
+    validations:
+      required: true
+
+  - type: input
+    id: sdk_version
+    attributes:
+      label: SDK / package version
+      placeholder: e.g. brainus-ai 1.2.0
+
+  - type: dropdown
+    id: plan
+    attributes:
+      label: API plan
+      options:
+        - Free
+        - Starter
+        - Pro
+        - Enterprise
+        - Not sure
+
+  - type: dropdown
+    id: regression
+    attributes:
+      label: Is this a regression?
+      description: Did this work before?
+      options:
+        - "Yes — it worked before"
+        - "No — never worked"
+        - Not sure
+
+  - type: textarea
+    id: context
+    attributes:
+      label: Additional context
+      description: Anything else that might help — environment, frequency, etc.

@@ -1,0 +1,100 @@
+name: API Behavior Issue
+description: Report unexpected answers, wrong citations, or incorrect model behavior
+labels: ["model-behavior"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Use this template when the API returns a response but the **content is wrong** — incorrect answers, missing or wrong citations, hallucinations, or ignored filters.
+
+        For errors and exceptions (4xx/5xx), use the **Bug Report** template instead.
+
+  - type: checkboxes
+    id: preflight
+    attributes:
+      label: Before you submit
+      options:
+        - label: This is a content/behavior issue, not a technical error or exception
+          required: true
+        - label: I searched existing issues and this has not been reported before
+          required: true
+
+  - type: textarea
+    id: query
+    attributes:
+      label: Query you sent
+      description: The exact query string you used.
+      placeholder: "What is photosynthesis?"
+    validations:
+      required: true
+
+  - type: textarea
+    id: filters
+    attributes:
+      label: Filters applied
+      description: Subject, grade, store ID, model, etc.
+      placeholder: |
+        subject: Biology
+        grade: 10
+        model: brainusai-thinking
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: What the API returned
+      description: The actual answer or citations you received.
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: What you expected
+      description: What the correct answer or behavior should be, and why.
+    validations:
+      required: true
+
+  - type: dropdown
+    id: behavior_type
+    attributes:
+      label: Type of behavior issue
+      options:
+        - Wrong or inaccurate answer
+        - Hallucinated content not in the syllabus
+        - Missing citations
+        - Wrong citations
+        - Filters ignored (wrong subject/grade content returned)
+        - Inconsistent answers across identical queries
+        - Answer in wrong language
+        - Other
+    validations:
+      required: true
+
+  - type: dropdown
+    id: reproducible
+    attributes:
+      label: Is this reproducible?
+      options:
+        - Always — same query always returns wrong result
+        - Sometimes — inconsistent behavior
+        - Once — happened once, unsure if reproducible
+    validations:
+      required: true
+
+  - type: dropdown
+    id: impact
+    attributes:
+      label: Impact
+      options:
+        - Critical — produces dangerous or severely wrong content
+        - High — wrong answer for a core curriculum topic
+        - Medium — minor inaccuracy
+        - Low — edge case
+    validations:
+      required: true
+
+  - type: textarea
+    id: context
+    attributes:
+      label: Additional context
+      description: Relevant syllabus reference, expected source material, or anything else helpful.
