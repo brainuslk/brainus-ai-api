@@ -4,7 +4,9 @@
 
 **Please do not report security vulnerabilities through public GitHub issues.**
 
-If you discover a security vulnerability in BrainUs AI API, email us at **security@crew.brainus.lk** with:
+If you discover a security vulnerability in BrainUs AI API, report it through our **[Vulnerability Disclosure Program](https://www.brainus.lk/security)** (powered by HackerOne). The VDP form includes our full guidelines and preferred submission format.
+
+Alternatively, you can email **security@crew.brainus.lk** with:
 
 - A description of the vulnerability
 - Steps to reproduce
