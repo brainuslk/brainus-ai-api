@@ -173,7 +173,7 @@ import asyncio
 from brainus_ai import BrainusAI
 
 async def main():
-    client = BrainusAI(api_key="your_api_key_here")
+    client = BrainusAI()
     
     # Get usage statistics
     stats = await client.get_usage()
@@ -191,7 +191,7 @@ asyncio.run(main())
 ```javascript
 import { BrainusAI } from '@brainus/ai';
 
-const client = new BrainusAI({ apiKey: 'your_api_key_here' });
+const client = new BrainusAI();
 
 // Get usage statistics
 const stats = await client.getUsage();

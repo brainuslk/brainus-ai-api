@@ -89,7 +89,7 @@ Example:
 # client = BrainusAI(api_key="brainus_1234567890")  # Incomplete key
 
 # Correct
-# client = BrainusAI(api_key="brainus_1234567890abcdef1234567890abcdef")
+# client = BrainusAI()
 ```
 
 ## Rate Limit Exceeded
@@ -269,7 +269,7 @@ Example:
 ```python
 # Increase timeout (if SDK allows configuration in constructor)
 # client = BrainusAI(
-#     api_key=os.getenv("BRAINUS_API_KEY"),
+#     # api_key not needed — reads BRAINUS_API_KEY automatically
 #     timeout=60.0  # seconds
 # )
 
@@ -371,7 +371,7 @@ from brainus_ai import BrainusAI
 # Enable debug logging
 logging.basicConfig(level=logging.DEBUG)
 
-# client = BrainusAI(api_key="brainus_your_key")
+# client = BrainusAI()
 
 # Now you'll see detailed request/response logs
 # result = await client.query(query="test", store_id="default")

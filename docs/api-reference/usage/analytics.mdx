@@ -28,7 +28,7 @@ Get a snapshot of your usage programmatically:
 from brainus_ai import BrainusAI
 
 async def analyze_usage():
-    client = BrainusAI(api_key="your_api_key_here")
+    client = BrainusAI()
     usage = await client.get_usage()
 
     # Quick metrics
@@ -48,7 +48,7 @@ async def analyze_usage():
 ```javascript
 import { BrainusAI } from "@brainus/ai";
 
-const client = new BrainusAI({ apiKey: "your_api_key_here" });
+const client = new BrainusAI();
 const usage = await client.getUsage();
 
 // Quick metrics

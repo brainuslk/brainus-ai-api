@@ -19,7 +19,7 @@ from brainus_ai import BrainusAI
 import os
 import asyncio
 
-# client = BrainusAI(api_key=os.getenv("BRAINUS_API_KEY"))
+# client = BrainusAI()
 cache = {}
 
 async def cached_query(client, query: str):
@@ -47,7 +47,7 @@ from brainus_ai import BrainusAI
 import asyncio
 import os
 
-# client = BrainusAI(api_key=os.getenv("BRAINUS_API_KEY"))
+# client = BrainusAI()
 # Using a sync redis client for simplicity, but consider aioredis for full async apps
 cache = redis.Redis(host='localhost', port=6379, db=0)
 
@@ -173,7 +173,7 @@ import os
 # ]
 
 async def prefetch_queries():
-    async with BrainusAI(api_key=os.getenv("BRAINUS_API_KEY")) as client:
+    async with BrainusAI() as client:
         # Create tasks for concurrent execution
         tasks = [
             client.query(query=q, store_id="default")

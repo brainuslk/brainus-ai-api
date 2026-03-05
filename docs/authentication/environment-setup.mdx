@@ -29,9 +29,7 @@ Set up your development environment to work securely with the BrainUs API across
     require("dotenv").config();
     const { BrainusAI } = require("@brainus/ai");
 
-    const client = new BrainusAI({
-      apiKey: process.env.BRAINUS_API_KEY,
-    });
+    const client = new BrainusAI(); // Reads BRAINUS_API_KEY automatically
 
     async function main() {
       const result = await client.query({
@@ -66,10 +64,10 @@ Set up your development environment to work securely with the BrainUs API across
     import asyncio
     from brainus_ai import BrainusAI
 
-    load_dotenv()
+    load_dotenv()  # Loads .env into environment
 
     async def main():
-        async with BrainusAI(api_key=os.getenv("BRAINUS_API_KEY")) as client:
+        async with BrainusAI() as client:  # Reads BRAINUS_API_KEY automatically
             result = await client.query(
                 query="What is photosynthesis?",
                 store_id="default"
@@ -145,9 +143,7 @@ echo "BRAINUS_API_KEY=brainus_your_key_here" > .env.local
 import { BrainusAI } from "@brainus/ai";
 import { NextRequest, NextResponse } from "next/server";
 
-const client = new BrainusAI({
-  apiKey: process.env.BRAINUS_API_KEY!,
-});
+const client = new BrainusAI();
 
 export async function POST(request: NextRequest) {
   const { query } = await request.json();
@@ -220,7 +216,7 @@ app = Flask(__name__)
 @app.route('/query', methods=['POST'])
 async def query():
     data = request.json
-    async with BrainusAI(api_key=os.getenv("BRAINUS_API_KEY")) as client:
+    async with BrainusAI() as client:
         result = await client.query(query=data['query'], store_id='default')
     return jsonify({'answer': result.answer})
 
@@ -247,9 +243,7 @@ const { BrainusAI } = require("@brainus/ai");
 const app = express();
 app.use(express.json());
 
-const client = new BrainusAI({
-  apiKey: process.env.BRAINUS_API_KEY,
-});
+const client = new BrainusAI();
 
 app.post("/query", async (req, res) => {
   const { query } = req.body;

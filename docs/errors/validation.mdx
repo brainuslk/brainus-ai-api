@@ -318,7 +318,7 @@ def validate_query_request(query: str, store_id: str, max_results: int = 5):
 ```typescript
 import { BrainusAI, QueryRequest } from "@brainus/ai";
 
-const client = new BrainusAI({ apiKey: process.env.BRAINUS_API_KEY });
+const client = new BrainusAI();
 
 // TypeScript enforces types
 const request: QueryRequest = {

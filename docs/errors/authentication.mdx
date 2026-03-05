@@ -28,8 +28,8 @@ Complete guide to resolving authentication and API key errors.
 # Typo or incomplete key
 # client = BrainusAI(api_key="brainus_1234")
 
-# Correct full key (loaded from env)
-# client = BrainusAI(api_key=os.getenv("BRAINUS_API_KEY"))
+# Correct: SDK reads BRAINUS_API_KEY automatically
+# client = BrainusAI()
 ```
 
 2. **Key was revoked**
@@ -43,7 +43,7 @@ Check if your key still exists in the [Dashboard](https://developers.brainus.lk/
 # client = BrainusAI(api_key="sk_test_...")  # Won't work in production
 
 # Use correct environment
-# client = BrainusAI(api_key=os.getenv("BRAINUS_API_KEY"))
+# client = BrainusAI()
 ```
 
 ### Solutions
@@ -95,18 +95,13 @@ export BRAINUS_API_KEY=brainus_your_key_here
 2. **Not loading .env file**
 
 ```python
-# Forgot to load .env
-from brainus_ai import BrainusAI
-import os
+# Without .env loaded, BRAINUS_API_KEY won't be in the environment
+# BrainusAI() will raise AuthenticationError
 
-# client = BrainusAI(api_key=os.getenv("BRAINUS_API_KEY"))  # None!
-
-# Load .env first
+# Load .env first (if using a .env file)
 from dotenv import load_dotenv
-import os
-
 load_dotenv()  # Important!
-client = BrainusAI(api_key=os.getenv("BRAINUS_API_KEY"))
+client = BrainusAI()  # Now reads BRAINUS_API_KEY automatically
 ```
 
 3. **Header not set correctly**
@@ -234,7 +229,7 @@ import re
 import os
 
 def validate_key_format(api_key: str) -> bool:
-    pattern = r'^sk_(live|test)_[a-zA-Z0-9]{32,}$'
+    pattern = r'^brainus_[a-zA-Z0-9]{32,}$'
     return bool(re.match(pattern, api_key))
 
 key = os.getenv("BRAINUS_API_KEY")
@@ -253,7 +248,7 @@ from brainus_ai import BrainusAI
 logging.basicConfig(level=logging.DEBUG)
 
 # See actual headers sent
-# client = BrainusAI(api_key="brainus_your_key")
+# client = BrainusAI()
 ```
 
 ### 4. Verify Environment
@@ -306,10 +301,9 @@ BRAINUS_API_KEY=brainus_prod_key
 # NEVER do this
 # client = BrainusAI(api_key="brainus_1234567890abcdef")
 
-# Use environment variables
+# SDK reads BRAINUS_API_KEY from environment automatically
 from brainus_ai import BrainusAI
-import os
-client = BrainusAI(api_key=os.getenv("BRAINUS_API_KEY"))
+client = BrainusAI()
 ```
 
 ### 2. Exposed in Frontend

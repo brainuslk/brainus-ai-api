@@ -34,9 +34,7 @@ pnpm add @brainus/ai
 const { BrainusAI } = require("@brainus/ai");
 // For TypeScript: import { BrainusAI } from "@brainus/ai";
 
-const client = new BrainusAI({
-  apiKey: process.env.BRAINUS_API_KEY || "your_api_key_here",
-});
+const client = new BrainusAI(); // Reads BRAINUS_API_KEY from environment automatically
 
 async function main() {
   const response = await client.query({
@@ -55,11 +53,9 @@ main();
 ```typescript
 import { BrainusAI } from "@brainus/ai";
 
-const client = new BrainusAI({
-  apiKey: "your_api_key_here",
-  // Optional: override base URL if needed
-  // baseUrl: "https://api.brainus.lk"
-});
+const client = new BrainusAI();
+// Or with optional overrides:
+// const client = new BrainusAI({ baseUrl: "https://api.brainus.lk" });
 ```
 
 ## Making Queries
@@ -68,7 +64,7 @@ const client = new BrainusAI({
 
 ```typescript
 import { BrainusAI } from "@brainus/ai";
-const client = new BrainusAI({ apiKey: "brainus_..." });
+const client = new BrainusAI();
 
 const result = await client.query({
   query: "What is ICT?",
@@ -146,7 +142,7 @@ Full type definitions included:
 ```typescript
 import { BrainusAI } from "@brainus/ai";
 
-const client = new BrainusAI({ apiKey: process.env.BRAINUS_API_KEY! });
+const client = new BrainusAI();
 
 async function processQuery(question: string) {
   const result = await client.query({
@@ -243,9 +239,7 @@ export function useBrainUs() {
 import { BrainusAI } from "@brainus/ai";
 import { NextRequest, NextResponse } from "next/server";
 
-const client = new BrainusAI({
-  apiKey: process.env.BRAINUS_API_KEY!,
-});
+const client = new BrainusAI();
 
 export async function POST(request: NextRequest) {
   try {

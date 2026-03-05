@@ -68,15 +68,13 @@ Flask 2.0+ supports async routes.
 # app.py
 from flask import Flask, request, jsonify
 from brainus_ai import BrainusAI, RateLimitError
-import os
-import time
 import asyncio
 
 app = Flask(__name__)
 
 async def query_with_retry(query, store_id="default", max_retries=3):
     """Helper to retry on rate limit errors"""
-    async with BrainusAI(api_key=os.getenv("BRAINUS_API_KEY")) as client:
+    async with BrainusAI() as client:
         for attempt in range(max_retries):
             try:
                 return await client.query(query=query, store_id=store_id)
@@ -123,7 +121,6 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import Optional, Dict, List
 from brainus_ai import BrainusAI, BrainusError
-import os
 
 app = FastAPI(title="BrainUs Proxy API")
 
@@ -148,7 +145,7 @@ class QueryResponse(BaseModel):
 @app.post("/api/query", response_model=QueryResponse)
 async def query_endpoint(request: QueryRequest, background_tasks: BackgroundTasks):
     try:
-        async with BrainusAI(api_key=os.getenv("BRAINUS_API_KEY")) as client:
+        async with BrainusAI() as client:
             result = await client.query(
                 query=request.query,
                 store_id=request.store_id,
@@ -178,11 +175,10 @@ if __name__ == "__main__":
 ```python
 import asyncio
 from brainus_ai import BrainusAI
-import os
 
 async def query_multiple(queries: list[str]):
     """Query multiple questions in parallel"""
-    async with BrainusAI(api_key=os.getenv("BRAINUS_API_KEY")) as client:
+    async with BrainusAI() as client:
         tasks = [
             client.query(query=q, store_id="default")
             for q in queries
@@ -213,15 +209,13 @@ if __name__ == "__main__":
 from brainus_ai import BrainusAI
 import pandas as pd
 from typing import List
-import time
 import asyncio
-import os
 
 async def process_batch(queries: List[str], batch_size: int = 10):
     """Process queries in batches with rate limiting"""
     results = []
 
-    async with BrainusAI(api_key=os.getenv("BRAINUS_API_KEY")) as client:
+    async with BrainusAI() as client:
         for i in range(0, len(queries), batch_size):
             batch = queries[i:i + batch_size]
 
@@ -271,12 +265,11 @@ from brainus_ai import (
     APIError
 )
 import asyncio
-import os
 
 async def robust_query(query: str, max_retries: int = 3):
     """Query with comprehensive error handling"""
 
-    async with BrainusAI(api_key=os.getenv("BRAINUS_API_KEY")) as client:
+    async with BrainusAI() as client:
         for attempt in range(max_retries):
             try:
                 result = await client.query(query=query, store_id="default")

@@ -130,7 +130,7 @@ Here's how simple it is to query BrainUs API:
     ```python
     from brainus_ai import BrainusAI
 
-    async with BrainusAI(api_key="your-api-key") as client:
+    async with BrainusAI() as client:  # Reads BRAINUS_API_KEY from environment
         result = await client.query(
             query="Explain photosynthesis",
             store_id="default"
@@ -144,7 +144,7 @@ Here's how simple it is to query BrainUs API:
     ```javascript
     import { BrainusAI } from '@brainus/ai';
 
-    const client = new BrainusAI({ apiKey: 'your-api-key' });
+    const client = new BrainusAI(); // Reads BRAINUS_API_KEY from environment
     const result = await client.query({
       query: 'Explain photosynthesis',
       storeId: 'default'

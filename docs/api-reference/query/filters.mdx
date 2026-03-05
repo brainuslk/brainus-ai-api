@@ -185,7 +185,7 @@ Here's a comprehensive example using all filters and options:
     from brainus_ai import BrainusAI
 
     async def main():
-        async with BrainusAI(api_key=os.getenv("BRAINUS_API_KEY")) as client:
+        async with BrainusAI() as client:
             response = await client.query(
                 query="Explain the water cycle",
                 store_id="default",

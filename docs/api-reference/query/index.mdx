@@ -36,7 +36,7 @@ Get started with our official SDKs or use direct HTTP requests:
     from brainus_ai import BrainusAI
 
     async def main():
-        client = BrainusAI(api_key="your_api_key")
+        client = BrainusAI()
 
         response = await client.query(
             query="What is photosynthesis?"
@@ -55,7 +55,7 @@ Get started with our official SDKs or use direct HTTP requests:
     ```javascript
     import { BrainusAI } from '@brainus/ai';
 
-    const client = new BrainusAI({ apiKey: 'your_api_key' });
+    const client = new BrainusAI();
 
     const response = await client.query({
       query: 'What is photosynthesis?'

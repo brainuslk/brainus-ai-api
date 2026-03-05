@@ -32,7 +32,7 @@ Apply filters to reduce irrelevant results:
 ```python
 from brainus_ai import BrainusAI, QueryFilters
 
-client = BrainusAI(api_key="your_api_key")
+client = BrainusAI()
 
 # Better targeting with filters
 response = await client.query(
@@ -53,7 +53,7 @@ Focus your queries for better results:
 ```python
 from brainus_ai import BrainusAI
 
-client = BrainusAI(api_key="your_api_key")
+client = BrainusAI()
 
 # For quick fact checks - be specific
 response = await client.query(
@@ -100,7 +100,7 @@ async def cached_query(client: BrainusAI, query: str, ttl_seconds: int = 3600):
     return response
 
 # Usage
-client = BrainusAI(api_key="your_api_key")
+client = BrainusAI()
 result1 = await cached_query(client, "What is photosynthesis?")  # API call
 result2 = await cached_query(client, "What is photosynthesis?")  # From cache
 ```
@@ -165,7 +165,7 @@ import os
 
 async def process_queries_batch(queries: list[str]):
     """Process multiple queries with rate limit handling."""
-    client = BrainusAI(api_key=os.getenv("BRAINUS_API_KEY"))
+    client = BrainusAI()
     results = []
 
     for query in queries:
@@ -202,7 +202,7 @@ import os
 async def query_with_retry(query: str, max_retries: int = 3):
     """Query with exponential backoff on rate limits."""
 
-    async with BrainusAI(api_key=os.getenv("BRAINUS_API_KEY")) as client:
+    async with BrainusAI() as client:
         for attempt in range(max_retries):
             try:
                 return await client.query(query, store_id="default")
@@ -230,7 +230,7 @@ from brainus_ai import (
 import os
 
 async def safe_query(query: str):
-    async with BrainusAI(api_key=os.getenv("BRAINUS_API_KEY")) as client:
+    async with BrainusAI() as client:
         try:
             return await client.query(query, store_id="default")
         except AuthenticationError:
@@ -331,7 +331,7 @@ import os
 from brainus_ai import BrainusAI
 
 # Load from environment
-# async with BrainusAI(api_key=os.getenv("BRAINUS_API_KEY")) as client:
+# async with BrainusAI() as client:
 ```
 
 ### 3. Validate User Input

@@ -1,0 +1,210 @@
+---
+title: Query with Attachments
+description: Send images, PDFs, and other files with your queries
+---
+
+## Overview
+
+The BrainUs API supports multimodal queries, allowing you to send images, PDFs, and other files alongside your text questions. This is useful for:
+
+- Analyzing diagrams, charts, and images from textbooks
+- Extracting information from scanned documents
+- Understanding visual content in educational materials
+- Asking questions about specific images or PDFs
+
+## Supported File Types
+
+- **Images:** JPEG, PNG, WebP, GIF, HEIC
+- **Documents:** PDF, Plain Text
+
+## Limits
+
+- Maximum **5 files** per request
+- Maximum **10MB** per file
+- Attachments count toward your API usage and rate limits
+- Images increase token usage (typically 258-516 tokens per image)
+
+## Privacy & Data Handling
+
+**Important**: Your files are never stored on our servers.
+
+- Files are processed **in-memory only**
+- **No disk or cloud storage** - files never touch our filesystem
+- **Immediate disposal** after processing
+- Files are sent directly to **Google Gemini API** for processing
+- **Zero retention** - no caching or logging of file contents
+
+This ensures maximum privacy and security for your sensitive documents.
+
+## File Type Detection
+
+The API automatically detects file types from:
+1. **URL file extension** (.jpg, .png, .pdf, etc.)
+2. **Response Content-Type header** when downloading
+3. **You can optionally specify** `media_type` if auto-detection fails
+
+If the file type isn't supported by Gemini, you'll get a clear error message.
+
+## Two Methods
+
+You can send attachments using two different approaches:
+
+### Method 1: URL-Based (JSON)
+
+Send attachment URLs in your JSON request body. This is best if you already have files hosted on a CDN or cloud storage.
+
+**Endpoint:** `POST /api/v1/dev/query`
+
+**Example Request:**
+
+```bash
+curl -X POST https://api.brainus.lk/api/v1/dev/query \
+  -H "X-API-Key: your_api_key_here" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "query": "What is shown in this diagram?",
+    "store_id": "default",
+    "attachments": [
+      {
+        "url": "https://cdn.example.com/diagram.jpg"
+      }
+    ]
+  }'
+```
+
+### Method 2: Multipart Upload
+
+Upload files directly in your request. This is best if you don't want to manage file storage and prefer to send files from your local system or user uploads.
+
+**Endpoint:** `POST /api/v1/dev/query-multipart`
+
+**Example Request:**
+
+```bash
+curl -X POST https://api.brainus.lk/api/v1/dev/query-multipart \
+  -H "X-API-Key: your_api_key_here" \
+  -F "query=What is shown in this diagram?" \
+  -F "store_id=default" \
+  -F "files=@/path/to/diagram.jpg" \
+  -F "files=@/path/to/document.pdf"
+```
+
+## Using Filters with Attachments
+
+You can combine attachments with metadata filters:
+
+**URL Method (JSON):**
+
+```json
+{
+  "query": "Explain this circuit diagram",
+  "store_id": "default",
+  "filters": {
+    "grade": "11",
+    "subject": "Physics"
+  },
+  "attachments": [
+    {
+      "url": "https://cdn.example.com/circuit.jpg"
+    }
+  ]
+}
+```
+
+**Multipart Method:**
+
+```bash
+curl -X POST https://api.brainus.lk/api/v1/dev/query-multipart \
+  -H "X-API-Key: your_api_key_here" \
+  -F "query=Explain this circuit diagram" \
+  -F "store_id=default" \
+  -F 'filters={"grade":"11","subject":"Physics"}' \
+  -F "files=@circuit.jpg"
+```
+
+## Security
+
+### Privacy & Storage
+
+**Both methods (URL and Multipart)**:
+- **Zero storage** - Files never saved to disk, database, or cloud storage
+- **In-memory only** - Files processed in RAM and immediately discarded
+- **No retention** - File contents are not logged or cached
+- **Third-party processing** - Files sent directly to Google Gemini API
+
+### URL Method
+
+- Only HTTPS URLs are allowed
+- URLs to localhost, private IPs, and cloud metadata endpoints are blocked (SSRF protection)
+- The API downloads files from your URLs and validates them before processing
+
+### Multipart Method
+
+- Files are processed in-memory without any disk I/O
+- All files are validated for type and size before processing
+- 10-second timeout for downloads prevents slowloris attacks
+
+## Cost Implications
+
+Attachments significantly increase token usage and costs:
+
+- **Small image (200KB):** ~258 tokens
+- **Large image (2MB):** ~258-516 tokens
+- **Text extraction:** Additional output tokens
+
+Example cost calculation for a query with one image (using `brainusai-fast`):
+
+- Base query: ~50 input tokens
+- Image: +258 tokens
+- Response: ~200 output tokens
+- **Total:** ~508 tokens
+
+Monitor your usage in the [Dashboard](/dashboard/usage) to track costs.
+
+## Error Handling
+
+Common errors when using attachments:
+
+**400 Bad Request (Unsupported File Type):**
+```json
+{
+  "detail": "Unsupported file type 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'. This file format is not supported by Gemini. Supported types: images (JPEG, PNG, WebP, GIF, HEIC), PDF, plain text."
+}
+```
+
+**400 Bad Request (Size):**
+```json
+{
+  "detail": "File 'large-image.jpg' size (15728640 bytes) exceeds maximum allowed size of 10485760 bytes (10MB)"
+}
+```
+
+**400 Bad Request (Count):**
+```json
+{
+  "detail": "Too many attachments. Maximum allowed is 5."
+}
+```
+
+**400 Bad Request (URL Security):**
+```json
+{
+  "detail": "Unsafe or invalid URL: http://localhost/image.jpg. Only HTTPS URLs to public domains are allowed."
+}
+```
+
+## Best Practices
+
+1. **Optimize file sizes:** Compress images before uploading to reduce token usage
+2. **Use appropriate resolution:** Higher resolution doesn't always improve results
+3. **Choose the right method:**
+   - Use URL method if you have CDN/storage infrastructure
+   - Use multipart method for user uploads or local files
+4. **Include context in your query:** Be specific about what you want to know about the attachment
+5. **Monitor usage:** Track token consumption in the dashboard
+
+## Next Steps
+
+- [Model Selection](/docs/api-reference/query/model-selection) - Choose the best model for your use case
+- [Rate Limits](/docs/rate-limits) - Understand rate limiting with attachments
+- [Best Practices](/docs/api-reference/query/best-practices) - Optimize your queries

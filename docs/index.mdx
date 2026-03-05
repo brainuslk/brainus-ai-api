@@ -129,14 +129,10 @@ Some basic knowledge of REST APIs and either Python or JavaScript would be usefu
 
 ```python
 import asyncio
-import os
 from brainus_ai import BrainusAI
 
 async def main():
-    # Ensure BRAINUS_API_KEY is set in your environment
-    api_key = os.getenv("BRAINUS_API_KEY")
-
-    async with BrainusAI(api_key=api_key) as client:
+    async with BrainusAI() as client:  # Reads BRAINUS_API_KEY from environment automatically
         result = await client.query(
             query="What is photosynthesis?",
             store_id="default"
@@ -229,7 +225,7 @@ Some common questions you may encounter.
     import os
     from brainus_ai import BrainusAI
 
-    async with BrainusAI(api_key=os.getenv("BRAINUS_API_KEY")) as client:
+    async with BrainusAI() as client:
         pass
     ```
 

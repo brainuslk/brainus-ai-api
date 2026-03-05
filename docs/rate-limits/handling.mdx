@@ -19,7 +19,7 @@ The recommended strategy for handling rate limits:
     import asyncio
     import os
 
-    # client = BrainusAI(api_key=os.getenv("BRAINUS_API_KEY"))
+    # client = BrainusAI()
 
     async def query_with_backoff(client, query, max_retries=3):
         for attempt in range(max_retries):
@@ -44,7 +44,7 @@ The recommended strategy for handling rate limits:
     ```javascript
     import { BrainusAI, RateLimitError } from '@brainus/ai';
 
-    // const client = new BrainusAI({ apiKey: process.env.BRAINUS_API_KEY });
+    // const client = new BrainusAI();
 
     async function queryWithBackoff(query, maxRetries = 3) {
       for (let attempt = 0; attempt < maxRetries; attempt++) {
@@ -117,10 +117,9 @@ async def worker(request_queue, client):
 
 # Usage with asyncio
 async def main():
-    api_key = os.getenv("BRAINUS_API_KEY")
     request_queue = asyncio.Queue()
     
-    async with BrainusAI(api_key=api_key) as client:
+    async with BrainusAI() as client:  # Reads BRAINUS_API_KEY automatically
         # Start worker
         worker_task = asyncio.create_task(worker(request_queue, client))
         
@@ -150,7 +149,7 @@ Track your usage to avoid hitting limits:
 from brainus_ai import BrainusAI
 import os
 
-# client = BrainusAI(api_key=os.getenv("BRAINUS_API_KEY"))
+# client = BrainusAI()
 
 async def query_with_monitoring(client, query):
     result = await client.query(query=query, store_id="default")

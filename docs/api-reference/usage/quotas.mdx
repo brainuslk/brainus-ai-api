@@ -38,7 +38,7 @@ Get your current quota usage programmatically:
 from brainus_ai import BrainusAI
 
 async def check_quota():
-    client = BrainusAI(api_key="your_api_key_here")
+    client = BrainusAI()
     usage = await client.get_usage()
 
     print(f"Plan: {usage.plan.name}")
@@ -51,7 +51,7 @@ async def check_quota():
 ```javascript
 import { BrainusAI } from "@brainus/ai";
 
-const client = new BrainusAI({ apiKey: "your_api_key_here" });
+const client = new BrainusAI();
 const usage = await client.getUsage();
 
 console.log(`Plan: ${usage.plan.name}`);

@@ -24,13 +24,10 @@ pip install brainus-ai
 
 ```python
 import asyncio
-import os
 from brainus_ai import BrainusAI
 
 async def main():
-    api_key = os.getenv("BRAINUS_API_KEY", "your_api_key_here")
-
-    async with BrainusAI(api_key=api_key) as client:
+    async with BrainusAI() as client:  # Reads BRAINUS_API_KEY from environment automatically
         response = await client.query(
             query="What is Python programming?",
         )
@@ -46,8 +43,8 @@ if __name__ == "__main__":
 ```python
 from brainus_ai import BrainusAI
 
-# Base configuration
-async with BrainusAI(api_key="your_key") as client:
+# Reads BRAINUS_API_KEY from environment automatically
+async with BrainusAI() as client:
     pass
 ```
 

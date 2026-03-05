@@ -49,10 +49,10 @@ Complete guide to handling rate limit and quota errors.
     import asyncio
     import os
 
-    # client = BrainusAI(api_key=os.getenv("BRAINUS_API_KEY"))
+    # client = BrainusAI()
 
     async def query_with_retry(query: str):
-        # async with BrainusAI(api_key=os.getenv("BRAINUS_API_KEY")) as client:
+        # async with BrainusAI() as client:
         try:
             return await client.query(query=query, store_id="default")
         except RateLimitError as e:
@@ -68,7 +68,7 @@ Complete guide to handling rate limit and quota errors.
     ```javascript
     import { BrainusAI } from '@brainus/ai';
     
-    // const client = new BrainusAI({ apiKey: process.env.BRAINUS_API_KEY });
+    // const client = new BrainusAI();
 
     async function queryWithRetry(query) {
       try {
@@ -98,7 +98,7 @@ import asyncio
 import os
 
 async def query_with_backoff(query: str, max_retries: int = 5):
-    async with BrainusAI(api_key=os.getenv("BRAINUS_API_KEY")) as client:
+    async with BrainusAI() as client:
         for attempt in range(max_retries):
             try:
                 return await client.query(query=query, store_id="default")
@@ -196,7 +196,7 @@ import asyncio
 from brainus_ai import BrainusAI, RateLimitError
 import os
 
-# client = BrainusAI(api_key=os.getenv("BRAINUS_API_KEY"))
+# client = BrainusAI()
 
 async def process_batch(client, queries: list, batch_size: int = 50):
     results = []

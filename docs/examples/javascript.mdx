@@ -14,9 +14,7 @@ Complete JavaScript and TypeScript examples for integrating BrainUs API with pop
 import { BrainusAI } from "@brainus/ai";
 import { NextRequest, NextResponse } from "next/server";
 
-const client = new BrainusAI({
-  apiKey: process.env.BRAINUS_API_KEY!,
-});
+const client = new BrainusAI();
 
 export async function POST(request: NextRequest) {
   try {
@@ -195,9 +193,7 @@ app.use(express.json());
 // Cache responses for 1 hour
 const cache = new NodeCache({ stdTTL: 3600 });
 
-const client = new BrainusAI({
-  apiKey: process.env.BRAINUS_API_KEY,
-});
+const client = new BrainusAI();
 
 app.post("/api/query", async (req, res) => {
   const { query, store_id = "default" } = req.body;
@@ -251,9 +247,7 @@ app.listen(3000, () => {
 ```typescript
 import { BrainusAI, BrainusError, RateLimitError } from "@brainus/ai";
 
-const client = new BrainusAI({
-  apiKey: process.env.BRAINUS_API_KEY!,
-});
+const client = new BrainusAI();
 
 async function robustQuery(
   query: string,
@@ -302,9 +296,7 @@ console.log(answer);
 // Future API
 import { BrainusAI } from "@brainus/ai";
 
-const client = new BrainusAI({
-  apiKey: process.env.BRAINUS_API_KEY!,
-});
+const client = new BrainusAI();
 
 async function* streamQuery(query: string) {
   const stream = await client.queryStream({
@@ -328,9 +320,7 @@ for await (const text of streamQuery("Explain photosynthesis")) {
 ```javascript
 const { BrainusAI } = require("@brainus/ai");
 
-const client = new BrainusAI({
-  apiKey: process.env.BRAINUS_API_KEY,
-});
+const client = new BrainusAI();
 
 async function processBatch(queries, batchSize = 5) {
   const results = [];
