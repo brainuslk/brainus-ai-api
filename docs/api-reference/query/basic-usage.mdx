@@ -59,10 +59,8 @@ The most basic query requires just a `query` parameter. The `store_id` is option
     ```javascript
     import { BrainusAI } from '@brainus/ai';
 
-    // Initialize the client
-    const client = new BrainusAI({
-      apiKey: process.env.BRAINUS_API_KEY
-    });
+    // Initialize the client - reads BRAINUS_API_KEY from environment automatically
+    const client = new BrainusAI();
 
     // Make a simple query
     const response = await client.query({

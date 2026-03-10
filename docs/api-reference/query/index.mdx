@@ -92,18 +92,18 @@ Get started with our official SDKs or use direct HTTP requests:
       required: true,
     },
     store_id: {
-      description: 'Knowledge base identifier (use "default")',
+      description: 'Knowledge base identifier (use "default"). Optional - uses default store if not provided.',
       type: "string",
-      required: true,
+      required: false,
     },
     filters: {
       description: "Filter results by grade, subject, or language",
       type: "object",
       required: false,
     },
-    options: {
-      description: "Additional options for the query",
-      type: "object",
+    model: {
+      description: "Model to use for generation. Must be in your plan's allowed_models.",
+      type: "string",
       required: false,
     },
   }}
@@ -140,7 +140,7 @@ Get started with our official SDKs or use direct HTTP requests:
     document_id: {
       description: "Unique identifier for the source document",
       type: "string",
-      required: false,
+      required: true,
     },
     document_name: {
       description: "Name of the source document",
@@ -148,19 +148,19 @@ Get started with our official SDKs or use direct HTTP requests:
       required: true,
     },
     pages: {
-      description: "Array of page numbers where content was found",
+      description: "Array of page numbers where content was found (empty array if unavailable)",
       type: "array",
-      required: false,
+      required: true,
     },
     metadata: {
-      description: "Additional metadata about the citation",
+      description: "Additional metadata about the citation (empty object if unavailable)",
       type: "object",
-      required: false,
+      required: true,
     },
     chunk_text: {
-      description: "Relevant text excerpt from the source document",
+      description: "Relevant text excerpt from the source document (may be null)",
       type: "string",
-      required: true,
+      required: false,
     },
   }}
 />

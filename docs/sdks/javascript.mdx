@@ -122,7 +122,7 @@ const response = await client.query({
 ```typescript
 const response = await client.query({
   query: "What is machine learning?",
-  model: "brainusai-fast",
+  model: "brainusai-thinking", // Must be in your plan's allowed_models
 });
 ```
 
@@ -156,12 +156,32 @@ async function processQuery(question: string) {
 ## Error Handling
 
 ```typescript
+import {
+  BrainusAI,
+  AuthenticationError,
+  RateLimitError,
+  QuotaExceededError,
+  APIError,
+} from "@brainus/ai";
+
+const client = new BrainusAI();
+
 try {
-  const badClient = new BrainusAI({ apiKey: "invalid_key" });
-  await badClient.query({ query: "test" });
+  const response = await client.query({ query: "Your question" });
+  console.log(response.answer);
 } catch (error) {
-  console.log(`Error type: ${error.constructor.name}`);
-  console.log(`Error message: ${error.message}`);
+  if (error instanceof AuthenticationError) {
+    console.error("Authentication failed:", error.message);
+  } else if (error instanceof RateLimitError) {
+    console.error("Rate limit exceeded:", error.message);
+    if (error.retryAfter) {
+      console.error(`Retry after ${error.retryAfter} seconds`);
+    }
+  } else if (error instanceof QuotaExceededError) {
+    console.error("Monthly quota exceeded:", error.message);
+  } else if (error instanceof APIError) {
+    console.error("API error:", error.message);
+  }
 }
 ```
 

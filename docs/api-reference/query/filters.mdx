@@ -1,5 +1,5 @@
 ---
-title: Filters & Options
+title: Filters
 description: Advanced filtering for precise results
 ---
 
@@ -222,22 +222,16 @@ Here's a comprehensive example using all filters and options:
     ```javascript
     import { BrainusAI } from '@brainus/ai';
 
-    const client = new BrainusAI({
-      apiKey: process.env.BRAINUS_API_KEY
-    });
+    const client = new BrainusAI(); // reads BRAINUS_API_KEY from environment
 
     async function main() {
       const response = await client.query({
         query: 'Explain the water cycle',
         storeId: 'default',
         filters: {
-          grade: ['8', '9', '10'],
-          subject: ['Science', 'Geography'],
-          language: 'en'
-        },
-        options: {
-          maxResults: 5,
-          minRelevance: 0.85
+          grade: '9',
+          subject: 'Science',
+          language: 'english'
         }
       });
 
@@ -246,7 +240,6 @@ Here's a comprehensive example using all filters and options:
       if (response.hasCitations) {
         console.log(`Found ${response.citations.length} relevant sources:`);
         response.citations.forEach((citation, i) => {
-          // Assuming metadata exists on citation type
           const grade = citation.metadata?.grade || 'N/A';
           const subject = citation.metadata?.subject || 'N/A';
 
@@ -256,19 +249,10 @@ Here's a comprehensive example using all filters and options:
           }
           console.log(`   Grade: ${grade}`);
           console.log(`   Subject: ${subject}`);
-          console.log(`   Relevance: ${(citation.relevance * 100).toFixed(1)}%`);
           if (citation.chunkText) {
             console.log(`   Snippet: ${citation.chunkText.substring(0, 100)}...`);
           }
         });
-      }
-
-      if (response.metadata) {
-        console.log(`\nQuery Statistics:`);
-        // Note: Metadata fields might also be camelCased in SDK
-        console.log(`  Query ID: ${response.metadata.query_id || response.metadata.id}`);
-        console.log(`  Response time: ${response.metadata.response_time_ms || response.metadata.responseTimeMs}ms`);
-        console.log(`  Tokens used: ${response.metadata.tokens_used || response.metadata.tokensUsed}`);
       }
     }
 
@@ -280,46 +264,25 @@ Here's a comprehensive example using all filters and options:
 
 ## Tips for Effective Filtering
 
-### 1. Start Broad, Then Narrow
+### Start Broad, Then Narrow
 
 Begin with fewer filters and add more if needed:
 
 ```python
 # First attempt - broad
-response = client.query("Cell biology", store_id="default")
+response = await client.query("Cell biology", store_id="default")
 
 # If too many results - narrow down
-response = client.query(
+response = await client.query(
     "Cell biology",
     store_id="default",
-    filters={"grade": ["10", "11"], "subject": ["Biology"]}
+    filters={"grade": "11", "subject": "Biology"}
 )
 ```
 
-### 2. Adjust Relevance Threshold
-
-Balance quantity vs. quality:
-
-- **0.6-0.7:** More comprehensive results
-- **0.8-0.9:** Highly relevant results only
-- **0.9-1.0:** Only near-perfect matches
-
-### 3. Optimize for Performance
-
-Fewer results = faster responses:
-
-```python
-# Fast query - minimal citations
-response = client.query(
-    "Quick fact check",
-    store_id="default",
-    options={"max_results": 1, "min_relevance": 0.9}
-)
-```
-
-<Callout type="warn">
-  Setting `min_relevance` too high (>0.95) may result in no citations if no
-  documents meet the threshold.
+<Callout type="tip">
+  Each filter field accepts a single string value. Use the most specific filter
+  that matches your use case.
 </Callout>
 
 ## Next Steps

@@ -66,7 +66,7 @@ BrainUs AI is a **documentation-powered educational API** built for developers w
     Test your API key with a simple curl command:
 
     ```bash
-    curl -X POST "https://api.brainus.lk/api/v1/query" \
+    curl -X POST "https://api.brainus.lk/api/v1/dev/query" \
       -H "X-API-Key: $BRAINUS_API_KEY" \
       -H "Content-Type: application/json" \
       -d '{
@@ -156,7 +156,7 @@ Here's how simple it is to query BrainUs API:
   </Tab>
   <Tab value="cURL">
     ```bash
-    curl -X POST "https://api.brainus.lk/api/v1/query" \
+    curl -X POST "https://api.brainus.lk/api/v1/dev/query" \
       -H "X-API-Key: your-api-key" \
       -H "Content-Type: application/json" \
       -d '{"query": "Explain photosynthesis", "store_id": "default"}'
