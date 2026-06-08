@@ -44,7 +44,7 @@ You can also use [GitHub Discussions](https://github.com/brainuslk/brainus-ai-ap
 
 ## Security
 
-To report a security vulnerability, use our [Vulnerability Disclosure Program](https://www.brainus.lk/security) (powered by HackerOne) or email **security@crew.brainus.lk** instead of opening a public issue. See [SECURITY.md](./SECURITY.md) for details.
+To report a security vulnerability, use our [Vulnerability Disclosure Program](https://www.brainus.lk/security) (powered by HackerOne) or email **security@brainus.lk** instead of opening a public issue. See [SECURITY.md](./SECURITY.md) for details.
 
 ## License
 
