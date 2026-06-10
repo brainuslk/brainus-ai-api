@@ -34,13 +34,13 @@ See the [`/examples`](./examples) directory for runnable Python, JavaScript, and
 
 ## Reporting bugs
 
-We welcome your feedback. File a [GitHub issue](https://github.com/brainuslk/brainus-ai-api/issues) or email [developers@brainus.lk](mailto:developers@brainus.lk).
+We welcome your feedback. File a [GitHub issue](https://github.com/brainushq/brainus-ai-api/issues) or email [developers@brainus.lk](mailto:developers@brainus.lk).
 
 ## Community
 
 Join the [BrainUs Discord](https://discord.gg/3Y7KsR7qcW) — select **Developer** during onboarding to get access to the API channels. Ask questions, share what you're building, and get help from the team.
 
-You can also use [GitHub Discussions](https://github.com/brainuslk/brainus-ai-api/discussions) for longer-form questions and ideas.
+You can also use [GitHub Discussions](https://github.com/brainushq/brainus-ai-api/discussions) for longer-form questions and ideas.
 
 ## Security
 

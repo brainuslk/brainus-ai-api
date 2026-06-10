@@ -34,7 +34,7 @@ jobs:
                 owner: context.repo.owner,
                 repo: context.repo.repo,
                 issue_number: issue.number,
-                body: "This issue has been automatically locked since it has been closed for 7 days. If you're experiencing a similar problem, please [open a new issue](https://github.com/brainuslk/brainus-ai-api/issues/new/choose).",
+                body: "This issue has been automatically locked since it has been closed for 7 days. If you're experiencing a similar problem, please [open a new issue](https://github.com/brainushq/brainus-ai-api/issues/new/choose).",
               });
 
               await github.rest.issues.lock({
